@@ -1,0 +1,16 @@
+% 文字コードは UTF-8
+% latex + dvipdfmx で組版
+% (Moga フォントは TTC 形式で, これは pdfTeX で未対応なため)
+\documentclass[a4paper]{article}
+\usepackage[moga-maruberi]{bxcjkjatype}% Mogaフォント + マルベリ
+\begin{document}
+Here is some test on Japanese fonts.\par
+\begin{uCJK*}% 外側の欧文の総称ファミリ設定を"引き継ぐ"
+  %(欧文 \rmfamily → 和文 明朝(\mcfamily))
+Mincho(明朝) family, and \textbf{in bold(太字)}.\par
+\sffamily  % 和文は"連動"してゴシック(\gtfamily)になる
+Gothic(ゴシック) family, and \textbf{in bold(太字)}.\par
+\mgfamily  % 和文のみ丸ゴシックに変更
+Maru-gothic(丸ゴシック) family.
+\end{uCJK*}
+\end{document}

@@ -1,0 +1,16 @@
+% 文字コードは UTF-8
+% pdflatex または latex + dvipdfmx/dvips で組版
+\documentclass[a4paper]{article} % pdfTeX の場合
+%\documentclass[a4paper,dvipdfmx]{article} % dvipdfmx の場合
+  %(ドライバ明示指定が必要なのは bxcjkjatype でなく hyperref)
+\usepackage[whole]{bxcjkjatype} % 本文全体をCJK*に入れる
+  % 以降はプレアンブルで和文が使用可能
+\newcommand\Nihongo{日本語} % ←和文を含むマクロ定義
+\usepackage[unicode,% ←しおりの出力に必要
+  bookmarks=true,colorlinks=true]{hyperref}
+\begin{document}
+% ↓和文を含む節見出し
+\section{Preparing document in \Nihongo\ using pdf\TeX\ な件}
+The 文書 contains \Nihongo\ and English,
+with a bit of 髙島屋.
+\end{document}
