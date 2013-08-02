@@ -4,7 +4,7 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxcjkjatype}[2013/08/02 v0.2]
+\ProvidesPackage{bxcjkjatype}[2013/08/02 v0.2a]
 \def\bxjy@pkgname{bxcjkjatype}
 
 %% definitions
@@ -59,6 +59,9 @@
 \DeclareOption{ipaex-type1}{\let\bxjy@oneweight=i}
 \DeclareOption{oneweight}{\let\bxjy@oneweight=t}
 \DeclareOption{nooneweight}{\let\bxjy@oneweight=f}
+\newif\ifbxjy@autotilde
+\DeclareOption{autotilde}{\bxjy@autotildetrue}
+\DeclareOption{noautotilde}{\bxjy@autotildefalse}
 % preset spec options
 \def\bxjy@all@main@preset{%
   %(uniweight)
@@ -124,12 +127,18 @@
 \fi\fi
 %%
 
-%%<+> \FirstCJKUseHook
-\appto\CJKhook{\bxjy@first@cjk@use@hook}
+%%<+> \FirstCJKUse
+%%<+> \EveryCJKUse
+\appto\CJKhook{%
+  \bxjy@first@cjk@use@hook
+  \bxjy@every@cjk@use@hook}
 \def\bxjy@first@cjk@use@hook{%
   \global\let\bxjy@first@cjk@use@hook\relax}
-\newcommand*\FirstCJKUseHook{%
+\let\bxjy@every@cjk@use@hook\@empty
+\newcommand*\FirstCJKUse{%
   \gappto\bxjy@first@cjk@use@hook}
+\newcommand*\EveryCJKUse{%
+  \gappto\bxjy@every@cjk@use@hook}
 
 %--------------------------------------- user interface
 
@@ -191,6 +200,10 @@
   \ifx\bxjy@tmpa\bxjy@tmpb \bxjy@oktrue \fi
   \edef\bxjy@genfam{\ifbxjy@ok \gtdefault \else \mcdefault \fi}}
 
+%% autotilde
+\EveryCJKUse{%
+  \ifbxjy@autotilde \CJKtilde \fi}
+
 %--------------------------------------- fontmap internals
 
 %% \bxjy@noembed
@@ -209,11 +222,13 @@
 \bxjy@do{gtr,gtb,gtx,gtu,mgr}{GothicBBB-Medium}
 
 %% \bxjy@addtospec{<id>}
+\@onlypreamble\bxjy@addtospec
 \def\bxjy@addtospec#1{%
   \begingroup
     \let\Entry\bxjy@Entry\let\ \space
     \@nameuse{bxjy@ME/#1}%
   \endgroup}
+\@onlypreamble\bxjy@Entry
 \def\bxjy@Entry#1{%
   \letcs\FONT{bxjy@FS/#1}%
   \ifx\FONT\bxjy@noembed
@@ -338,7 +353,7 @@
       \bxjy@okfalse \fi}}
 %% When no font is selected for a family by \set...font, then thm
 %  must be switched to that of ipxex-type1.
-\FirstCJKUseHook{\ting%
+\FirstCJKUse{\ting%
 \bxjy@check@alldefined{mnr,mnb}%
 \unless\ifbxjy@ok
 \bxjy@decl@family{mc}{CJK*ipxm-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
@@ -378,15 +393,15 @@
 \fi                             %</dvipdfmx>
 
 %% The document hooks for 'whole' option
-\AfterEndPreamble{%
+\AtBeginDocument{%
   \bxjy@set@genfam
   \setCJKfamilydefault{\bxjy@genfam}}
 \ifx t\bxjy@whole
-  \AfterEndPreamble{\begin{CJK*}{UTF8}{}}
-  \AtEndDocument{\clearpage\end{CJK*}}
+  \AtBeginDocument{\csuse{CJK*}{UTF8}{}}
+  \AtEndDocument{\clearpage\csuse{endCJK*}}
 \else\ifx p\bxjy@whole
-  \AfterEndPreamble{\begin{CJK}{UTF8}{}}
-  \AtEndDocument{\clearpage\end{CJK}}
+  \AtBeginDocument{\CJK{UTF8}{}}
+  \AtEndDocument{\clearpage\CJK}
 \fi\fi
 
 %% Invokes first-CJK hook at begin-document

@@ -1,0 +1,76 @@
+%% 文字コードは UTF-8
+% (pdf)latex で組版
+\documentclass[12pt]{beamer}           % pdfTeX の場合
+%\documentclass[12pt,dvipdfmx]{beamer} % dvipdfmx の場合
+%\usepackage{bxdpx-beamer}   % dvipdfmx の場合に必要に応じて
+\hypersetup{unicode}% しおりの和文出力に必要
+\usepackage[whole]{bxcjkjatype}% whole 指定
+%%↓ 後は普通に Beamer するだけ
+\usetheme{Warsaw}
+%---------------------------------------
+% 日本語している
+\title{How to do 日本語 with pdf{\TeX}}
+\author{ZR 某}
+\date{某日 of August, 2013}
+%---------------------------------------
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%---------------------------------------
+\section{日本語 with bxcjkjatype package}
+
+\begin{frame}[fragile]{First}
+  Load the \alert{bxcjkjatype} package in preamble.\par
+  Use of \structure{\texttt{whole}} option is often suitable.\par
+  \begin{exampleblock}{アレな Example}
+\begin{verbatim}
+\documentclass[a4paper]{article}
+\usepackage[whole]{bxcjkjatype}
+\end{verbatim}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Second}
+  Write whatever 日本語 text you like in the document body.\par
+  You can use ひらがな, カタカナ, 漢字, and/or
+  any character available in the standard fonts
+  (\structure{IPAex明朝/ゴシック}).\par
+  \begin{exampleblock}{アレな Example}
+\begin{verbatim}
+\documentclass[a4paper]{article}
+\usepackage[whole]{bxcjkjatype}
+\begin{document}
+鰻が無いならホバークラフトを食べればいいじゃない。
+\end{document}
+\end{verbatim}
+  \end{exampleblock}
+  \structure{※} Must use UTF-8.\par
+\end{frame}
+
+\begin{frame}{Third}
+  Compile the document as usual.\par
+  \begin{block}{アレな Output}
+    \rmfamily
+    鰻が無いならホバークラフトを食べればいいじゃない。
+  \end{block}
+\end{frame}
+
+\begin{frame}{Last}\relax
+  {\LARGE\alert{楽しい！！}\par}
+  \bigskip
+  (AA略
+\end{frame}
+
+%---------------------------------------
+\section{Conclusion (Not!)}
+
+\begin{frame}{Very important slide}
+  \transdissolve[duration=0.5]
+  \centering\Large
+  ご清聴ありがとうございました。
+\end{frame}
+
+\end{document}
