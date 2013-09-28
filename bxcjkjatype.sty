@@ -4,16 +4,22 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxcjkjatype}[2013/08/02 v0.2a]
+\ProvidesPackage{bxcjkjatype}[2013/09/28 v0.2b]
 \def\bxjy@pkgname{bxcjkjatype}
 
 %% definitions
 \def\bxjy@error{\PackageError\bxjy@pkgname}
 \def\bxjy@warn{\PackageWarning\bxjy@pkgname}
 \def\bxjy@info{\PackageInfo\bxjy@pkgname}
+
+%--------------------------------------- helpers
+
+%% variables
 \newif\ifbxjy@ok
 
-%--------------------------------------- environment check
+%% unique tokens
+\def\bxjy@mark{\bxjy@mark@}
+\def\bxjy@end{\bxjy@end@}
 
 %% \bxjy@ifprimitive\CS{<true>}{<false>}
 \@onlypreamble\bxjy@ifprimitive
@@ -23,6 +29,8 @@
   \ifx\bxjy@tmpa\bxjy@tmpb \expandafter\@firstoftwo
   \else \expandafter\@secondoftwo \fi
 }
+
+%--------------------------------------- environment check
 
 %% engine check
 \bxjy@oktrue
@@ -62,6 +70,12 @@
 \newif\ifbxjy@autotilde
 \DeclareOption{autotilde}{\bxjy@autotildetrue}
 \DeclareOption{noautotilde}{\bxjy@autotildefalse}
+\newif\ifbxjy@CJKpunct \bxjy@CJKpuncttrue
+\DeclareOption{CJKpunct}{\bxjy@CJKpuncttrue}
+\DeclareOption{noCJKpunct}{\bxjy@CJKpunctfalse}
+\newif\ifbxjy@CJKspace \bxjy@CJKspacetrue
+\DeclareOption{CJKspace}{\bxjy@CJKspacetrue}
+\DeclareOption{noCJKspace}{\bxjy@CJKspacefalse}
 % preset spec options
 \def\bxjy@all@main@preset{%
   %(uniweight)
@@ -77,7 +91,7 @@
 %% Dispatch options
 \ProcessOptions*
 
-%---------------------------------------
+%--------------------------------------- configuration check
 
 %% Check the driver specified
 \def\bxjy@tmpa#1#2{%
@@ -110,6 +124,8 @@
   \let\bxjy@main@preset\relax
 \fi\fi
 
+%--------------------------------------- preparations
+
 %% Load CJK package and friends
 \RequirePackage{CJK}
 \@namedef{opt@CJK.sty}{encapsulated}
@@ -117,8 +133,12 @@
 \let\CJK@active\relax
 \let\CJK@local\relax
 \RequirePackage{CJKutf8}
+\ifbxjy@CJKspace
 \RequirePackage{CJKspace}
+\fi
+\ifbxjy@CJKpunct
 \RequirePackage{CJKpunct}
+\fi
 
 %% Load other packages
 \RequirePackage{etoolbox}
@@ -187,8 +207,12 @@
 }
 
 %%<*> \setCJKfamilydefault{<fam>}
+\newbool{bxjy@default@set}
 \newrobustcmd*\setCJKfamilydefault[1]{%
+  \bxjy@default@settrue
   \CJKencfamily{UTF8}{#1}}
+\AtEndOfPackage{%
+  \bxjy@default@setfalse}
 
 %% \bxjy@set@genfam
 \def\bxjy@set@genfam{%
@@ -203,6 +227,30 @@
 %% autotilde
 \EveryCJKUse{%
   \ifbxjy@autotilde \CJKtilde \fi}
+
+%%<*> \UTF{<hex-number>}
+\newcommand*\UTF[1]{%
+  \edef\bxjy@tmpa{#1}%
+  \expandafter\bxjy@utf@a\bxjy@tmpa\bxjy@mark000000\bxjy@end}
+\def\bxjy@utf@a#1#2#3#4#5#6#7#8\bxjy@end{%
+  \bxjy@utf@b#1#2#3#4#5#6#7\bxjy@end}
+\def\bxjy@utf@b#1\bxjy@mark#2\bxjy@end{%
+  \uppercase{\bxjy@utf@c#2#1}\bxjy@end}
+\def\bxjy@utf@c#1#2#3#4#5#6\bxjy@end{%
+  \typeout{\string\Unicode{"#1#2#3#4}{"#5#6}}}
+
+%%<*> \CJKecglue
+\unless\ifdefined\CJKecglue
+  \def\CJKtilde{%
+    \CJK@global\def~{\CJKecglue\ignorespaces}}
+  \def\CJKecglue{\hspace{0.25em plus 0.125em minus 0.08em}}
+\fi
+
+%%<*> \>
+\def\bxjy@tmpa{\mskip\medmuskip}
+\ifx\>\bxjy@tmpa
+  \def\>{\ifmmode\mskip\medmuskip\else \CJKecglue\ignorespaces \fi}
+\fi
 
 %--------------------------------------- fontmap internals
 
@@ -353,7 +401,7 @@
       \bxjy@okfalse \fi}}
 %% When no font is selected for a family by \set...font, then thm
 %  must be switched to that of ipxex-type1.
-\FirstCJKUse{\ting%
+\FirstCJKUse{%
 \bxjy@check@alldefined{mnr,mnb}%
 \unless\ifbxjy@ok
 \bxjy@decl@family{mc}{CJK*ipxm-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
@@ -394,8 +442,11 @@
 
 %% The document hooks for 'whole' option
 \AtBeginDocument{%
-  \bxjy@set@genfam
-  \setCJKfamilydefault{\bxjy@genfam}}
+  \unless\ifbxjy@default@set
+    \bxjy@set@genfam
+    \setCJKfamilydefault{\bxjy@genfam}%
+    \typeout{--------------------\bxjy@genfam}%
+  \fi}
 \ifx t\bxjy@whole
   \AtBeginDocument{\csuse{CJK*}{UTF8}{}}
   \AtEndDocument{\clearpage\csuse{endCJK*}}
@@ -513,6 +564,5 @@
 \fi
 
 %--------------------------------------- all done
-\def\ting{\typeout{--\csname bxjy@FS/mnr\endcsname--}}\ting
 \endinput
 %% EOF
