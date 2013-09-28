@@ -1,0 +1,48 @@
+% This file is encoded in UTF-8.
+% (bxcjkjatype supports only UTF-8.)
+% To be typeset with pdflatex, latex + dvipdfmx, or latex + dvips
+\documentclass[a4paper]{article}
+% hyperref may require an explicit driver option
+% (bxcjkjatype does not.)
+%\documentclass[a4paper,dvipdfmx]{article}
+
+% The 'whole' option makes the whole document body wraped with an
+% CJK* environment.
+\usepackage[whole]{bxcjkjatype}
+
+% After loading the package, you can write 日本語 text, even in the
+% preamble. You can define a macro which includes 日本語.
+\newcommand\Nihongo{日本語}
+
+% You can make PDF files which holds correct CJK text as document
+% information, such as boookmarks.
+\usepackage[unicode,% ←needed to make bookmark text right
+  bookmarks=true,colorlinks=true]{hyperref}
+
+% Here I use Standard fonts (IPAex fonts) for Mincho and Gothic
+% families. For Maru-gothic family, I use "Rounded M+ 1c Regular"
+% (available at http://d.hatena.ne.jp/itouhiro/20120226).
+\setmarugothicfont{rounded-mplus-1c-regular.ttf}
+
+\begin{document}
+% (Now already in a CJK* environment.)
+
+% You can safely put a section heading containing 日本語!
+\section{Preparing 文書 in \Nihongo\ using pdf\TeX}
+The 文書 contains 日本語 and English.
+
+\section{Font selection}
+\begin{itemize}
+% \rmfamily designates Mincho family.
+\item \rmfamily Mincho (明朝) family.
+  % If you have specified a bold Mincho font with
+  % \setboldminchofont, then you will see it working.
+  % \textbf{And bold (太字) version.}
+% \sffamily designates Gothic family.
+\item \sffamily Gothic (ゴシック) family.
+% \mgfamily changes only CJK family, so alphabetic font family
+% remains unchanged (i.e. \sffamily).
+\item \mgfamily Maru-gothic (丸ゴシック) family.
+\end{itemize}
+
+\end{document}
