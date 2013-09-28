@@ -237,7 +237,7 @@
 \def\bxjy@utf@b#1\bxjy@mark#2\bxjy@end{%
   \uppercase{\bxjy@utf@c#2#1}\bxjy@end}
 \def\bxjy@utf@c#1#2#3#4#5#6\bxjy@end{%
-  \typeout{\string\Unicode{"#1#2#3#4}{"#5#6}}}
+  \Unicode{"#1#2#3#4}{"#5#6}}
 
 %%<*> \CJKecglue
 \unless\ifdefined\CJKecglue
@@ -430,6 +430,10 @@
 \let\bxjy@set@page@hook\AtBeginDvi
 \fi
 
+\else                           %<!*dvipdfmx>
+\let\bxjy@set@page@hook\@gobble
+\fi                             %</dvipdfmx>
+
 %% The begin-document hook for font mapping
 \AtBeginDocument{%
   \ifx f\bxjy@oneweight \bxjy@addtospec{STDM}%
@@ -438,14 +442,11 @@
   \bxjy@set@page@hook{\bxjy@spec}%
 }
 
-\fi                             %</dvipdfmx>
-
 %% The document hooks for 'whole' option
 \AtBeginDocument{%
   \unless\ifbxjy@default@set
     \bxjy@set@genfam
     \setCJKfamilydefault{\bxjy@genfam}%
-    \typeout{--------------------\bxjy@genfam}%
   \fi}
 \ifx t\bxjy@whole
   \AtBeginDocument{\csuse{CJK*}{UTF8}{}}
