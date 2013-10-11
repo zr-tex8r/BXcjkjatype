@@ -4,7 +4,7 @@ BXcjkjatype Package
 LaTeX: Support for Japanese typesetting with pdfLaTeX and CJK package
 
 This package provides working configuration of the CJK package suitable
-for Japanese typesetting of moderate quality. Moreover, it facilirates
+for Japanese typesetting of moderate quality. Moreover, it facilitates
 use of the CJK package for pLaTeX users, by providing commands that
 are similar to those used by the pLaTeX kernel and some other packages
 used with it.
@@ -19,7 +19,7 @@ package supports only UTF-8.
   * DVI driver: Anything. 
       - Non-default font settings require dvipdfmx or pdfTeX.
   * Dependent packages:
-      - CJK, CJKutf8, CJKspace, CJKpunct, etoolnoc; 
+      - CJK, CJKutf8, CJKspace, CJKpunct, etoolbox; 
       - ipaex-type1 (when using default font mapping); 
       - zhmetrics (when using non-default font mapping).
 
@@ -136,7 +136,7 @@ More advanced commands:
 
 #### Synchronization of CJK and non-CJK families
 
-The CJK pakcage (and pTeX engine) manages separate “current families”
+The CJK package (and pTeX engine) manages separate “current families”
 for CJK and alphabetic (non-CJK) families. While this treatment has its
 merit, synchronization of the two “current families” is convenient in
 many cases. Accordingly, tHe present package redefines some of the
@@ -146,16 +146,16 @@ alphabetic family, where the “counterpart” is defined as follows:
 
   * `\rmfamily` (Serif) → `\mcfamily` (Mincho)
   * `\sffamily` (Sans-serif) → `\gtfamily` (Gothic)
-  * `\ttfamily` (Monospae) → `\gtfamily` (Gothic)
+  * `\ttfamily` (Monospace) → `\gtfamily` (Gothic)
   * The counterpart of the other families is `\mcfamily`.
 
 Redefined commands:
 
   * `\rmfamily`/`\sffamily`/`\ttfamily`: Changes the CJK family to
-    the counterpart of the alphabetic font family after the original
-    function.
+    the counterpart of the alphabetic font family after executing the
+    original function.
   * `\normalfont`: Changes the CJK family to the default CJK family
-    specified by `\setCJKfamilydefault` comamnd.
+    specified by `\setCJKfamilydefault` command.
 
 There are shorthand forms of `CJK`/`CJK*` environemnts:
 
@@ -184,7 +184,6 @@ Please refer to the manual of that package for detail.
   * `\setminchofont[<id>]{<font-file>}`
   * `\setgothicfont[<id>]{<font-file>}`
   * `\setmarugothicfont[<id>]{<font-file>}`
-  * `\setlightminchofont[<id>]{<font-file>}`
   * `\setmediumminchofont[<id>]{<font-file>}`
   * `\setboldminchofont[<id>]{<font-file>}`
   * `\setmediumgothicfont[<id>]{<font-file>}`
@@ -196,13 +195,19 @@ the pdfTeX engine. One can use only TrueType fonts and moreover
 TTC format is not allowed. (One can use any flavor of OpenType fonts
 when using dvipdfmx.)
 
+Note: The present package does not support the light-weight Mincho font,
+and thus `\setlightminchofont` does nothing useful.
+
 #### Other commands
 
   * `\UTF{<hexadecimal-number>}`: Inputs a CJK character through Unicode
     codepoint value. `\UTF{5B57}` is equivalent to `\Unicode{"5B}{"57}`.
+
   * `\CJKecglue`: Insers a “shibuaki” space. This will be invoked by
     `~` when `\CJKtilde` is in effect. This command can be redefined by
-    users to adjust the value of shibuaki space, just like `\CJKglue`.
+    users to adjust the value of shibuaki space, just as `\CJKglue` can
+    be redefined to adjust inter-ideographic space.
+
     For example:
 
         \renewcommand{\CJKecglue}{\hspace{0.125em minus 0.125em}}
