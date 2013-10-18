@@ -4,7 +4,7 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxcjkjatype}[2013/09/28 v0.2b]
+\ProvidesPackage{bxcjkjatype}[2013/10/18 v0.2c]
 \def\bxjy@pkgname{bxcjkjatype}
 
 %% definitions
@@ -30,6 +30,11 @@
   \else \expandafter\@secondoftwo \fi
 }
 
+%% \bxjy@cond\ifXX...\fi{<true>}{<false>}
+\@gobbletwo\if\if \def\bxjy@cond#1\fi{%
+  #1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+}
+
 %--------------------------------------- environment check
 
 %% engine check
@@ -45,6 +50,9 @@
 \expandafter\endinput\fi\relax
 
 %--------------------------------------- option handling
+
+%% using keyval
+\RequirePackage{keyval}
 
 %% Declares options
 \let\bxjy@driver\@undefined
@@ -88,6 +96,13 @@
 \def\bxjy@do#1{\DeclareOption{#1}{\def\bxjy@main@preset{#1}}}
 \@for\bxjy@x:=\bxjy@all@main@preset\do{%
   \expandafter\bxjy@do\expandafter{\bxjy@x}}
+% keyval-type
+\DeclareOption*{%
+  \expandafter\bxjy@setkey@a\expandafter{\CurrentOption}}
+\def\bxjy@setkey@a{\setkeys{bxjy}}
+\let\bxjy@scale\relax
+\define@key{bxjy}{scale}{%
+  \def\bxjy@scale{#1}}
 %% Dispatch options
 \ProcessOptions*
 
@@ -123,6 +138,24 @@
   \bxjy@error{Preset options require a valid driver}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
+\ifx i\bxjy@oneweight \unless\ifx\bxjy@scale\relax
+  \bxjy@error{Scaling cannot go with 'ipaex-type1'}\@ehc
+  \let\bxjy@main@preset\relax
+\fi\fi
+
+%% default scale value
+\ifx\bxjy@scale\relax
+  \ifx\Cjascale\@undefined
+    \ifx\jsScale\@undefined
+      \def\bxjy@scale{1}
+    \else \let\bxjy@scale\jsScale
+    \fi
+  \else \let\bxjy@scale\Cjascale
+  \fi
+\fi
+\ifx i\bxjy@oneweight
+  \def\bxjy@scale{1}%
+\fi
 
 %--------------------------------------- preparations
 
@@ -228,17 +261,6 @@
 \EveryCJKUse{%
   \ifbxjy@autotilde \CJKtilde \fi}
 
-%%<*> \UTF{<hex-number>}
-\newcommand*\UTF[1]{%
-  \edef\bxjy@tmpa{#1}%
-  \expandafter\bxjy@utf@a\bxjy@tmpa\bxjy@mark000000\bxjy@end}
-\def\bxjy@utf@a#1#2#3#4#5#6#7#8\bxjy@end{%
-  \bxjy@utf@b#1#2#3#4#5#6#7\bxjy@end}
-\def\bxjy@utf@b#1\bxjy@mark#2\bxjy@end{%
-  \uppercase{\bxjy@utf@c#2#1}\bxjy@end}
-\def\bxjy@utf@c#1#2#3#4#5#6\bxjy@end{%
-  \Unicode{"#1#2#3#4}{"#5#6}}
-
 %%<*> \CJKecglue
 \unless\ifdefined\CJKecglue
   \def\CJKtilde{%
@@ -251,6 +273,120 @@
 \ifx\>\bxjy@tmpa
   \def\>{\ifmmode\mskip\medmuskip\else \CJKecglue\ignorespaces \fi}
 \fi
+
+%--------------------------------------- something Unicode
+
+%% \bxjy@pick@char\CSnext\CSexit
+\def\bxjy@pick@char#1#2{%
+  \let\bxjy@pc@next#1\let\bxjy@pc@exit#2%
+  \futurelet\bxjy@pc@tok\bxjy@pick@char@a
+}
+\def\bxjy@pick@char@a{%
+  \bxjy@cond\ifcat\noexpand\bxjy@pc@tok\relax\fi{%
+    \bxjy@pick@char@b
+  }{\bxjy@pc@exit}%
+}
+\chardef\bxjy@csta="C0
+\def\bxjy@pick@char@b#1{%
+  \bxjy@cond{\ifnum0\ifcat\noexpand#1\noexpand~%
+                    \ifnum`#1<\bxjy@csta\else1\fi\fi =\@ne}\fi{%
+    \begingroup
+      \let\UTFviii@two@octets\bxjy@pcseq@two
+      \let\UTFviii@three@octets\bxjy@pcseq@three
+      \let\UTFviii@four@octets\bxjy@pcseq@four
+      \let\CJK@@@\bxjy@pcseq@cjk
+      \expandafter\bxjy@pick@char@c\romannumeral-`>#1%
+  }{\bxjy@pc@exit#1}%
+}
+\def\bxjy@pick@char@c#1\bxjy@end{%
+  \endgroup
+  \edef\bxjy@tmpa{{#1}}%
+  \expandafter\bxjy@pc@next\bxjy@tmpa
+}
+
+%% \bxjy@pcseq@two
+\def\bxjy@pcseq@two#1#2{#1\string#2\bxjy@end}
+\def\bxjy@pcseq@three#1#2#3{#1\string#2\string#3\bxjy@end}
+\def\bxjy@pcseq@four#1#2#3#4{#1\string#2\string#3\string#4\bxjy@end}
+\def\bxjy@pcseq@cjk#1\expandafter#2#3#4#5#6#7#8#9\fi{%
+  \csname bxjy@X/\string#4\expandafter\endcsname\string#8}
+\@namedef{bxjy@X/\string\CJK@XX}{\bxjy@pcseq@two}
+\@namedef{bxjy@X/\string\CJK@XXX}{\bxjy@pcseq@three}
+\@namedef{bxjy@X/\string\CJK@XXXX}{\bxjy@pcseq@four}
+
+%% \bxjy@pick@cseq\CS
+\def\bxjy@pick@cseq#1#2{%
+  \def\bxjy@pcs@do##1{#1{##1}\bxjy@pick@cseq@a}%
+  \bxjy@pick@cseq@a#2\bxjy@pcs@end
+}
+\def\bxjy@pick@cseq@a{\bxjy@pick@char\bxjy@pcs@do\bxjy@pcs@exit}
+\def\bxjy@pcs@exit#1\bxjy@pcs@end{}
+
+%%<*> \UTF{<hex-number>}
+\newcommand*\UTF[1]{%
+  \edef\bxjy@tmpa{#1}%
+  \expandafter\bxjy@utf@a\bxjy@tmpa\bxjy@mark000000\bxjy@end}
+\def\bxjy@utf@a#1#2#3#4#5#6#7#8\bxjy@end{%
+  \bxjy@utf@b#1#2#3#4#5#6#7\bxjy@end}
+\def\bxjy@utf@b#1\bxjy@mark#2\bxjy@end{%
+  \uppercase{\bxjy@utf@c#2#1}\bxjy@end}
+\def\bxjy@utf@c#1#2#3#4#5#6\bxjy@end{%
+  \Unicode{"#1#2#3#4}{"#5#6}}
+
+%%<*> \CJKforce{<kanji>...}
+\newcommand*\CJKforce[1]{%
+  \let\bxjy@cjkforce@do\bxjy@cjkforce@a
+  \bxjy@pick@cseq\bxjy@cjk@force{#1}%
+}
+\def\bxjy@cjkforce@a#1#2#3{%
+  \ifx#1\relax\else \let#2#1\let#1\relax \fi
+}
+%%<*> \CJKunforce{<kanji>...}
+\newcommand*\CJKunforce[1]{%
+  \let\bxjy@cjkforce@do\bxjy@cjkunforce@a
+  \bxjy@pick@cseq\bxjy@cjk@force{#1}%
+}
+\def\bxjy@cjkunforce@a#1#2#3{%
+  \ifx#1\relax \let#1#2\fi
+}
+\def\bxjy@cjk@force#1{%
+  \expandafter\bxjy@cjkforce@do
+   \csname u8:#1\expandafter\endcsname
+   \csname bxjy@U/#1\endcsname{#1}%
+}
+
+%%<*> \CJKforced{<kanji>}
+\@ifdefinable{\CJKforced}{%
+  \protected\def\CJKforced#1{% drop braces
+    \bxjy@pick@char\bxjy@cjkforced\relax#1%
+  }
+  \def\bxjy@cjkforced#1{%
+    \scantokens{\def\x{#1}\relax}% make active again
+    \begingroup
+      \expandafter\let\csname u8:#1\endcsname\relax \x
+    \endgroup
+  }
+  \let\bxjy@org@at\@
+  \protected\def\@{\bxjy@at@a}
+}
+
+%%<*> \@
+\def\bxjy@at@a{%
+  \futurelet\bxjy@tok\bxjy@at@b
+}
+\def\bxjy@at@b{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok.\fi{\bxjy@org@at}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\@sptoken\fi{\bxjy@org@at}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\bgroup\fi{\CJKforced}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\relax\fi{\bxjy@at@c}{%
+     \bxjy@org@at
+  }}}}%
+}
+\def\bxjy@at@c#1{%
+  \bxjy@cond\ifcat\noexpand#1\noexpand~\fi{\CJKforced}{%
+     \bxjy@org@at
+  }#1%
+}
 
 %--------------------------------------- fontmap internals
 
@@ -375,14 +511,15 @@
 \bxjy@decl@series{#1}{eb}{#4}}
 
 %% the declarations
+\def\bxjy@sc{sCJK*[\bxjy@scale]}
 \ifx f\bxjy@oneweight
-\bxjy@decl@family{mc}{CJK*unisong}{CJK*unili}{CJKssub*mc/bx/n}
-\bxjy@decl@family{gt}{CJK*unihei}{CJK*uniyou}{CJK*unifs}
-\bxjy@decl@family{mg}{CJK*unikai}{CJKssub*mg/m/n}{CJKssub*mg/m/n}
+\bxjy@decl@family{mc}{\bxjy@sc unisong}{\bxjy@sc unili}{CJKssub*mc/bx/n}
+\bxjy@decl@family{gt}{\bxjy@sc unihei}{\bxjy@sc uniyou}{\bxjy@sc unifs}
+\bxjy@decl@family{mg}{\bxjy@sc unikai}{CJKssub*mg/m/n}{CJKssub*mg/m/n}
 \else\ifx t\bxjy@oneweight
-\bxjy@decl@family{mc}{CJK*unisong}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
-\bxjy@decl@family{gt}{CJK*unihei}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
-\bxjy@decl@family{mg}{CJK*unikai}{CJKssub*mg/m/n}{CJKssub*mg/m/n}
+\bxjy@decl@family{mc}{\bxjy@sc unisong}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
+\bxjy@decl@family{gt}{\bxjy@sc unihei}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
+\bxjy@decl@family{mg}{\bxjy@sc unikai}{CJKssub*mg/m/n}{CJKssub*mg/m/n}
 \else\ifx i\bxjy@oneweight
 \renewcommand{\mcdefault}{ipxm}
 \renewcommand{\gtdefault}{ipxg}
@@ -404,15 +541,15 @@
 \FirstCJKUse{%
 \bxjy@check@alldefined{mnr,mnb}%
 \unless\ifbxjy@ok
-\bxjy@decl@family{mc}{CJK*ipxm-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
+\bxjy@decl@family{mc}{\bxjy@sc ipxm-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
 \fi
 \bxjy@check@alldefined{gtr,gtb,gtx}%
 \unless\ifbxjy@ok 
-\bxjy@decl@family{gt}{CJK*ipxg-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
+\bxjy@decl@family{gt}{\bxjy@sc ipxg-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
 \fi
 \bxjy@check@alldefined{mgr}%
 \unless\ifbxjy@ok 
-\bxjy@decl@family{mg}{CJK*ipxg-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
+\bxjy@decl@family{mg}{\bxjy@sc ipxg-r-u}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
 \fi
 }
 

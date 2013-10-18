@@ -82,6 +82,13 @@ explanation of this feature.
 
 [pxchfon package]: http://www.ctan.org/pkg/pxchfon
 
+#### Options for Japanese font scaling
+
+  * `scale=<real>`: Sets the scaling factor for Japanese fonts.
+
+NB: One cannot employ the scaling when using the font setting of the
+`ipaex-type1` option.
+
 #### Other options
 
   * `everypage`: Outputs the font mapping information on every page of
@@ -203,6 +210,16 @@ and thus `\setlightminchofont` does nothing useful.
   * `\UTF{<hexadecimal-number>}`: Inputs a CJK character through Unicode
     codepoint value. `\UTF{5B57}` is equivalent to `\Unicode{"5B}{"57}`.
 
+  * `\CJKforce{<character>...}`: Afterwards Treats the characters given
+    in the argument as CJK characters (printed using Japanese fonts).
+
+  * `\CJKunforce{<character>...}`: Cancels the effect of the `\CJKforce`
+    command.
+
+  * `\@<character>`: Treats the next character (only that occurrence)
+    as a CJK character, when the character is outside ASCII; othersize
+    the normal meaning of `\@` is retained.
+
   * `\CJKecglue`: Insers a “shibuaki” space. This will be invoked by
     `~` when `\CJKtilde` is in effect. This command can be redefined by
     users to adjust the value of shibuaki space, just as `\CJKglue` can
@@ -222,6 +239,10 @@ and thus `\setlightminchofont` does nothing useful.
 
 Revision History
 ----------------
+
+  * Version 0.2c <2013/10/18>
+      - Added support of Japanese scaling.
+      - Added `\CJKforce`, `\CJKunforce`, `\@`.
 
   * Version 0.2b <2013/09/28>
       - Added `\UTF`, `\CJKecglue`.
