@@ -82,11 +82,11 @@ explanation of this feature.
 
 [pxchfon package]: http://www.ctan.org/pkg/pxchfon
 
-#### Options for Japanese font scaling
+#### Options for CJK font scaling
 
-  * `scale=<real>`: Sets the scaling factor for Japanese fonts.
+  * `scale=<real>`: Sets the scaling factor for CJK fonts.
 
-NB: One cannot employ the scaling when using the font setting of the
+Note: One cannot employ the scaling when using the font setting of the
 `ipaex-type1` option.
 
 #### Other options
@@ -111,8 +111,8 @@ The present package provides three “generic” CJK families in the same
 way as pLaTeX plus the [japanese-otf package]: Mincho family
 (`\mcfamily`), Gothic family (`\gtfamily`), and Maru-gothic family
 (`\mgfamily`). In default setting, the font set from the ipaex-type1
-package are allocated; Mincho family uses IPA Mincho font, and Gothic
-and Maru-gothic families use IPA Gothic font. This allocation can be
+package are allocated; Mincho family uses IPAex Mincho font, and Gothic
+and Maru-gothic families use IPAex Gothic font. This allocation can be
 altered by users.
 
   * `\mcfamily`: Changes the CJK family to Mincho family. Equivalent
@@ -211,7 +211,7 @@ and thus `\setlightminchofont` does nothing useful.
     codepoint value. `\UTF{5B57}` is equivalent to `\Unicode{"5B}{"57}`.
 
   * `\CJKforce{<character>...}`: Afterwards Treats the characters given
-    in the argument as CJK characters (printed using Japanese fonts).
+    in the argument as CJK characters (printed using CJK fonts).
 
   * `\CJKunforce{<character>...}`: Cancels the effect of the `\CJKforce`
     command.
@@ -241,7 +241,7 @@ Revision History
 ----------------
 
   * Version 0.2c <2013/10/18>
-      - Added support of Japanese scaling.
+      - Added support of CJK font scaling.
       - Added `\CJKforce`, `\CJKunforce`, `\@`.
 
   * Version 0.2b <2013/09/28>
