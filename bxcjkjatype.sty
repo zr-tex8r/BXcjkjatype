@@ -1,3 +1,4 @@
+
 %
 % bxcjkjatype.sty
 %
@@ -84,6 +85,9 @@
 \newif\ifbxjy@CJKspace \bxjy@CJKspacetrue
 \DeclareOption{CJKspace}{\bxjy@CJKspacetrue}
 \DeclareOption{noCJKspace}{\bxjy@CJKspacefalse}
+\newif\ifbxjy@boldbyembolden \bxjy@boldbyemboldentrue
+\DeclareOption{boldbyembolden}{\bxjy@boldbyemboldentrue}
+\DeclareOption{noboldbyembolden}{\bxjy@boldbyemboldenfalse}
 % preset spec options
 \def\bxjy@all@main@preset{%
   %(uniweight)
@@ -142,6 +146,9 @@
   \bxjy@error{Scaling cannot go with 'ipaex-type1'}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
+\ifx \bxjy@driver\bxjy@none
+  \bxjy@boldbyemboldenfalse
+\fi
 
 %% default scale value
 \ifx\bxjy@scale\relax
@@ -491,8 +498,8 @@
     \fontseries\ebdefault\selectfont}
   \providecommand{\ebdefault}{eb}
 \fi
-\let\bxjy@CJKnormal\CJKnormal
-\protected\def\CJKnormal{\bxjy@CJKnormal}
+\protected\def\CJKbold{\CJK@bold@true}
+\protected\def\CJKnormal{\CJK@bold@false}
 
 %% \bxjy@decl@series
 \@onlypreamble\bxjy@decl@series
@@ -553,6 +560,55 @@
 \fi
 }
 
+%--------------------------------------- bold-by-embolden
+\ifbxjy@boldbyembolden %<*boldbyembolden>
+
+%<*>\CJKboldbyembolden/\CJKnoboldbyembolden
+\newbool{bxjy@byembolden}
+\newcommand*{\CJKboldbyembolden}{\bxjy@byemboldentrue}
+\newcommand*{\CJKnoboldbyembolden}{\bxjy@byemboldenfalse}
+\CJKboldbyembolden % initial value
+
+%% \bxjy@pdfliteraldirect{<pdf-text>}
+\ifx\bxjy@driver\bxjy@pdftex
+  \def\bxjy@pdfliteraldirect#1{\pdfliteral page {#1}}
+\else\ifx\bxjy@driver\bxjy@dvipdfmx
+  \def\bxjy@pdfliteraldirect#1{\special{pdf:literal direct #1}}
+\else
+  \bxjy@error{INTERNAL_ERROR(1)}
+\fi\fi
+
+%% \bxjy@embolden
+\def\bxjy@bsfactor{1.68}
+\def\bxjy@embolden{%
+  \bxjy@pdfliteraldirect{q 2 Tr
+    \strip@pt\dimexpr\bxjy@bsfactor\dimexpr\CJKboldshift
+    \relax\relax\space w}}
+%% \bxjy@noembolden
+\def\bxjy@noembolden{%
+  \bxjy@pdfliteraldirect{Q}}
+
+%% redefine \CJKsymbol
+\protected\@namedef{CJKsymbol }#1{%
+  \ifCJK@bold@\ifbxjy@byembolden
+    \bxjy@embolden
+  \fi\fi
+  \symbol{#1}%
+  \ifCJK@bold@
+    \ifbxjy@byembolden
+      \bxjy@noembolden
+    \else
+      \kern-\CJKboldshift\hb@xt@\z@{\hss\symbol{#1}}%
+      \kern2\dimexpr\CJKboldshift\relax
+      \hb@xt@\z@{\hss\symbol{#1}}\kern-\CJKboldshift\relax
+    \fi
+  \fi}
+
+\else                  %<*!boldbyembolden>
+% makes \CJK[no]boldbyembolden no-op
+\newcommand*{\CJKboldbyembolden}{}
+\newcommand*{\CJKnoboldbyembolden}{}
+\fi                    %</boldbyembolden>
 %--------------------------------------- begin-document hook
 
 \ifx\bxjy@driver\bxjy@dvipdfmx  %<*dvipdfmx>
