@@ -109,6 +109,10 @@
 \let\bxjy@scale\relax
 \define@key{bxjy}{scale}{%
   \def\bxjy@scale{#1}}
+% 'verrtical=<val>'
+\let\bxjy@vertical\@empty
+\define@key{bxjy}{vertical}[true]{%
+  \def\bxjy@vertical{#1}}
 %% Dispatch options
 \ProcessOptions*
 
@@ -197,6 +201,39 @@
   \gappto\bxjy@first@cjk@use@hook}
 \newcommand*\EveryCJKUse{%
   \gappto\bxjy@every@cjk@use@hook}
+
+%--------------------------------------- vertical
+
+%% constants
+\chardef\bxjy@vert@none=0
+\chardef\bxjy@vert@false=0
+\chardef\bxjy@vert@=0
+\chardef\bxjy@vert@sub=1
+\chardef\bxjy@vert@main=2
+\chardef\bxjy@vert@true=2
+
+%% \bxjy@vert
+\let\bxjy@vert\bxjy@vert@none
+\ifcsdef{bxjy@vert@\bxjy@vertical}{%
+  \letcs\bxjy@vert{bxjy@vert@\bxjy@vertical}
+}{%else
+  \bxjy@error{Invalid value of 'vertical': \bxjy@vertical}\@ehc
+}
+\ifcase\bxjy@vert %none
+  \AfterEndPreamble{\csuse{CJKhorz}}
+\or %sub
+  \RequirePackage{CJKvert}[]%
+  \AfterEndPreamble{\CJKhorz}
+\or %main
+  \RequirePackage{CJKvert}[]%
+  \AfterEndPreamble{\CJKvert}
+\fi
+\AtBeginDocument{%
+  \@ifpackageloaded{CJKvert}{%
+    \bxjy@patch@CJKsymbol@CJKvert
+    \patchcmd{\CJKvert}{\normalfont}{\bxjy@normalafont}{}{}%
+    \patchcmd{\CJKhorz}{\normalfont}{\bxjy@normalafont}{}{}%
+  }{}}
 
 %--------------------------------------- user interface
 
@@ -479,6 +516,9 @@
   \not@math@alphabet\mcfamily\relax
   \CJKfamily{\mgdefault}}
 
+%% \bxjy@normalafont
+\letcs\bxjy@normalafont{normalfont }
+
 %% Add patches to \rmfamily, etc.
 \csappto{rmfamily }{%
   \CJKfamily{\mcdefault}}
@@ -613,29 +653,89 @@
 
 %% \bxjy@embolden
 \def\bxjy@bsfactor{1.68}
+\def\bxjy@bswd;{\strip@pt\dimexpr\bxjy@bsfactor
+  \dimexpr\CJKboldshift\relax\relax}
 \def\bxjy@embolden{%
-  \bxjy@pdfliteraldirect{q 2 Tr
-    \strip@pt\dimexpr\bxjy@bsfactor\dimexpr\CJKboldshift
-    \relax\relax\space w}}
+  \bxjy@pdfliteraldirect{q 2 Tr \bxjy@bswd; w}}
+\def\bxjy@embolden@alt{%
+  \bxjy@pdfliteraldirect{2 Tr \bxjy@bswd; w}}
 %% \bxjy@noembolden
 \def\bxjy@noembolden{%
   \bxjy@pdfliteraldirect{Q}}
+\def\bxjy@noembolden@alt{%
+  \bxjy@pdfliteraldirect{0 Tr}}
 
-%% redefine \CJKsymbol
-\protected\@namedef{CJKsymbol }#1{%
-  \ifCJK@bold@\ifbxjy@byembolden
-    \bxjy@embolden
-  \fi\fi
-  \symbol{#1}%
-  \ifCJK@bold@
-    \ifbxjy@byembolden
-      \bxjy@noembolden
-    \else
-      \kern-\CJKboldshift\hb@xt@\z@{\hss\symbol{#1}}%
-      \kern2\dimexpr\CJKboldshift\relax
-      \hb@xt@\z@{\hss\symbol{#1}}\kern-\CJKboldshift\relax
+%% \bxjy@patch@CJKsymbol@CJKvert
+% Patches to CJKvert version of \CJKsymbol.
+\@onlypreamble\bxjy@patch@CJKsymbol@CJKvert
+\def\bxjy@patch@CJKsymbol@CJKvert{%
+  \global\let\bxjy@patch@CJKsymbol@CJKvert\relax
+  \bxjy@oktrue
+  \expandafter\patchcmd\csname CJKsymbol \endcsname{%from
+    \ifCJK@bold@ \CJK@temp
+      \hbox to \z@{\hss \raise\CJKboldshift\hbox{\CJK@temp}}%
+      \hbox to \z@{\hss \raise-\CJKboldshift\hbox{\CJK@temp}}%
+    \else \CJK@temp
     \fi
-  \fi}
+  }{%to
+    \ifCJK@bold@\ifbxjy@byembolden
+      \bxjy@embolden@alt
+    \fi\fi
+    \CJK@temp
+    \ifCJK@bold@
+      \ifbxjy@byembolden
+        \bxjy@noembolden@alt
+      \else
+        \hbox to \z@{\hss \raise\CJKboldshift\hbox{\CJK@temp}}%
+        \hbox to \z@{\hss \raise-\CJKboldshift\hbox{\CJK@temp}}%
+      \fi
+    \fi
+  }{}{\bxjy@okfalse}%
+  \expandafter\patchcmd\csname CJKsymbol \endcsname{%from
+    \ifCJK@bold@ \CJK@temp
+      \hbox to \CJKboldshift{\hss\CJK@temp}%
+      \hbox to \CJKboldshift{\hss\CJK@temp}%
+    \else \CJK@temp
+    \fi
+  }{%to
+    \ifCJK@bold@\ifbxjy@byembolden
+      \bxjy@embolden@alt
+    \fi\fi
+    \CJK@temp
+    \ifCJK@bold@
+      \ifbxjy@byembolden
+        \bxjy@noembolden@alt
+      \else
+        \kern-\CJKboldshift\hb@xt@\z@{\hss\CJK@temp}%
+        \kern2\dimexpr\CJKboldshift\relax
+        \hb@xt@\z@{\hss\CJK@temp}\kern-\CJKboldshift\relax
+      \fi
+    \fi
+  }{}{\bxjy@okfalse}%
+  \unless\ifbxjy@ok
+    \bxjy@error{Failure in patching to CJKvert}\@ehc
+  \fi
+}
+%% redefine \CJKsymbol
+\@ifpackageloaded{CJKvert}{%
+  % CJKvert version
+  \bxjy@patch@CJKsymbol@CJKvert
+}{% non-CJKvert version
+  \@namedef{CJKsymbol }#1{%
+    \ifCJK@bold@\ifbxjy@byembolden
+      \bxjy@embolden
+    \fi\fi
+    \symbol{#1}%
+    \ifCJK@bold@
+      \ifbxjy@byembolden
+        \bxjy@noembolden
+      \else
+        \kern-\CJKboldshift\hb@xt@\z@{\hss\symbol{#1}}%
+        \kern2\dimexpr\CJKboldshift\relax
+        \hb@xt@\z@{\hss\symbol{#1}}\kern-\CJKboldshift\relax
+      \fi
+    \fi}%
+}
 
 \else                  %<*!boldbyembolden>
 % makes \CJK[no]boldbyembolden no-op
