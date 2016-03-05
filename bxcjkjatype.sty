@@ -89,6 +89,9 @@
 \newif\ifbxjy@boldbyembolden \bxjy@boldbyemboldentrue
 \DeclareOption{boldbyembolden}{\bxjy@boldbyemboldentrue}
 \DeclareOption{noboldbyembolden}{\bxjy@boldbyemboldenfalse}
+\newif\ifbxjy@substmin
+\DeclareOption{substmingoth}{\bxjy@substmintrue}
+\DeclareOption{nosubstmingoth}{\bxjy@substminfalse}
 % preset spec options
 \def\bxjy@all@main@preset{%
   %(uniweight)
@@ -594,14 +597,6 @@
 \fi
 }
 
-%--------------------------------------- ipaex-type1
-\ifbxjy@ipaex
-
-%% default changed
-\renewcommand{\mcdefault}{ipxm}
-\renewcommand{\gtdefault}{ipxg}
-\renewcommand{\mgdefault}{ipxg}
-
 %% \bxjy@force@load@font@fam
 \@onlypreamble\bxjy@force@load@font@fam
 \def\bxjy@force@load@font@fam#1{%
@@ -612,6 +607,14 @@
     \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
     \let\extract@font\relax \pickup@font
   \endgroup}
+
+%--------------------------------------- ipaex-type1
+\ifbxjy@ipaex
+
+%% default changed
+\renewcommand{\mcdefault}{ipxm}
+\renewcommand{\gtdefault}{ipxg}
+\renewcommand{\mgdefault}{ipxg}
 
 %% scale applied
 \unless\ifdim\bxjy@scale\p@=\p@
@@ -631,6 +634,23 @@
   \bxjy@tmpa{ipxma}t{ipxm}%
   \bxjy@tmpa{ipxga}t{ipxg}%
 \fi
+
+\fi
+%--------------------------------------- subst-mingoth
+\ifbxjy@substmin
+
+%% apply
+\def\bxjy@tmpa#1#2{%
+  \bxjy@force@load@font@fam{#1}%
+  \expandafter\ifx\csname C70+#1\endcsname\@empty\else
+    \def\bxjy@tmpb{\DeclareFontShape{C70}{#1}}%
+    \bxjy@tmpb{l}{n}{<->CJKssub*#2/m/n}{}%
+    \bxjy@tmpb{m}{n}{<->CJKssub*#2/m/n}{}%
+    \bxjy@tmpb{bx}{n}{<->CJKssub*#2/bx/n}{\CJKbold}%
+  \fi}
+\bxjy@tmpa{min}{mc}%
+\bxjy@tmpa{goth}{gt}%
+\bxjy@tmpa{maru}{mg}%
 
 \fi
 %--------------------------------------- bold-by-embolden
