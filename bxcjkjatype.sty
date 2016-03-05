@@ -72,8 +72,9 @@
 \newif\ifbxjy@everypage
 \DeclareOption{everypage}{\bxjy@everypagetrue}
 \DeclareOption{noeverypage}{\bxjy@everypagefalse}
+\newif\ifbxjy@ipaex
 \let\bxjy@oneweight=f
-\DeclareOption{ipaex-type1}{\let\bxjy@oneweight=i}
+\DeclareOption{ipaex-type1}{\bxjy@ipaextrue}
 \DeclareOption{oneweight}{\let\bxjy@oneweight=t}
 \DeclareOption{nooneweight}{\let\bxjy@oneweight=f}
 \newif\ifbxjy@autotilde
@@ -104,6 +105,7 @@
 \DeclareOption*{%
   \expandafter\bxjy@setkey@a\expandafter{\CurrentOption}}
 \def\bxjy@setkey@a{\setkeys{bxjy}}
+% 'scale=<real>'
 \let\bxjy@scale\relax
 \define@key{bxjy}{scale}{%
   \def\bxjy@scale{#1}}
@@ -142,10 +144,9 @@
   \bxjy@error{Preset options require a valid driver}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
-\ifx i\bxjy@oneweight \unless\ifx\bxjy@scale\relax
-  \bxjy@error{Scaling cannot go with 'ipaex-type1'}\@ehc
-  \let\bxjy@main@preset\relax
-\fi\fi
+%\ifx i\bxjy@oneweight \unless\ifx\bxjy@scale\relax
+%  \bxjy@error{Scaling cannot go with 'ipaex-type1'}\@ehc
+%\fi\fi
 \ifx \bxjy@driver\bxjy@none
   \bxjy@boldbyemboldenfalse
 \fi
@@ -159,9 +160,6 @@
     \fi
   \else \let\bxjy@scale\Cjascale
   \fi
-\fi
-\ifx i\bxjy@oneweight
-  \def\bxjy@scale{1}%
 \fi
 
 %--------------------------------------- preparations
@@ -527,11 +525,7 @@
 \bxjy@decl@family{mc}{\bxjy@sc unisong}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
 \bxjy@decl@family{gt}{\bxjy@sc unihei}{CJKssub*gt/m/n}{CJKssub*gt/m/n}
 \bxjy@decl@family{mg}{\bxjy@sc unikai}{CJKssub*mg/m/n}{CJKssub*mg/m/n}
-\else\ifx i\bxjy@oneweight
-\renewcommand{\mcdefault}{ipxm}
-\renewcommand{\gtdefault}{ipxg}
-\renewcommand{\mgdefault}{ipxg}
-\fi\fi\fi
+\fi\fi
 
 %% Set default CJK family
 \setCJKfamilydefault{\mcdefault}
@@ -560,6 +554,45 @@
 \fi
 }
 
+%--------------------------------------- ipaex-type1
+\ifbxjy@ipaex
+
+%% default changed
+\renewcommand{\mcdefault}{ipxm}
+\renewcommand{\gtdefault}{ipxg}
+\renewcommand{\mgdefault}{ipxg}
+
+%% \bxjy@force@load@font@fam
+\@onlypreamble\bxjy@force@load@font@fam
+\def\bxjy@force@load@font@fam#1{%
+  \begingroup
+    \def\f@encoding{C70}\let\CJK@enc\f@encoding
+    \edef\f@family{#1}\let\CJK@family\f@family
+    \def\f@series{m}\def\f@shape{n}%
+    \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
+    \let\extract@font\relax \pickup@font
+  \endgroup}
+
+%% scale applied
+\unless\ifdim\bxjy@scale\p@=\p@
+  \def\bxjy@tmpa#1#2#3{%
+    \bxjy@force@load@font@fam{#1}%
+    \expandafter\ifx\csname C70+#1\endcsname\@empty\else
+      \def\bxjy@tmpb{\DeclareFontShape{C70}{#1}}%
+      \bxjy@tmpb{m}{n}{<->sCJK*[\bxjy@scale]#3-r-u}{}%
+      \ifx t#2%
+        \bxjy@tmpb{m}{sl}{<->sCJK*[\bxjy@scale]#3-ro-u}{}%
+        \bxjy@tmpb{bx}{n}{<->sCJKb*[\bxjy@scale]#3-r-u}{\CJKbold}%
+        \bxjy@tmpb{bx}{sl}{<->sCJKb*[\bxjy@scale]#3-ro-u}{\CJKbold}%
+      \fi
+    \fi}
+  \bxjy@tmpa{ipxm}f{ipxm}%
+  \bxjy@tmpa{ipxg}f{ipxg}%
+  \bxjy@tmpa{ipxma}t{ipxm}%
+  \bxjy@tmpa{ipxga}t{ipxg}%
+\fi
+
+\fi
 %--------------------------------------- bold-by-embolden
 \ifbxjy@boldbyembolden %<*boldbyembolden>
 
