@@ -116,6 +116,10 @@
 \let\bxjy@vertical\@empty
 \define@key{bxjy}{vertical}[true]{%
   \def\bxjy@vertical{#1}}
+% 'ttfname=<val>'
+\let\bxjy@ttfname\@empty
+\define@key{bxjy}{ttfname}{%
+  \def\bxjy@ttfname{#1}}
 %% Dispatch options
 \ProcessOptions*
 
@@ -259,11 +263,8 @@
   \else
     \@for\bxjy@x:={#1}\do{%
       \ifx @#2@\@namedef{bxjy@FS/\bxjy@x}{#3}%
-      \else\ifx\bxjy@driver\bxjy@dvipdfmx
-        \@namedef{bxjy@FS/\bxjy@x}{:#2:#3}%
-      \else % ttc is unavailable in pdfTeX
-        \bxjy@error{pdfTeX does not support TTC}\@eha
-      \fi\fi}%
+      \else \@namedef{bxjy@FS/\bxjy@x}{:#2:#3}%
+      \fi}%
   \fi}
 \@for\bxjy@x:={%
   mnr,mnb,gtr,gtb,gtx,gtu,mgr%
@@ -433,6 +434,113 @@
   }#1%
 }
 
+%--------------------------------------- ttfname
+
+%% variables
+\let\bxjy@ttfname@ptn\relax
+\let\bxjy@ttc@info
+
+%% constants
+\begingroup \let\\\@backslashchar
+% The set of allowed characters, all ASCII but the followings:
+% [special in Windwos path name]  \ / ? : * " > < |
+% [special in LaTeX] # % ^ { } ~
+\edef\x{[]!$&'()+,.0-9;=@A-Z_`a-z-]}
+\xdef\bxjy@Rx@tp@a{^(\x*)\\*(\x*)$}
+\xdef\bxjy@Rx@tp@b{^.*\\.[Tt][Tt][Ff]$}
+\xdef\bxjy@Rx@tp@c{^(|.*[^0-9])([0-9]{1,5})([^0-9]*)$}
+\xdef\bxjy@Rx@fn@a{^(.*)\\.\\w+$}
+\xdef\bxjy@Rx@fn@b{^.*\\.[Tt][Tt][Cc]$}
+\endgroup
+
+%% \bxjy@set@match\CS{<number>}
+\@onlypreamble\bxjy@set@match
+\def\bxjy@set@match#1#2{%
+  \expandafter\bxjy@set@match@a\pdflastmatch#2\relax#1}
+\@onlypreamble\bxjy@set@match@a
+\def\bxjy@set@match@a#1>#2\relax#3{\def#3{#2}}
+
+%% \bxjy@set@ttfname@ptn
+% Sets \bxjy@ttfname@ptn.
+\@onlypreamble\bxjy@set@ttfname@ptn
+\def\bxjy@set@ttfname@ptn{%
+  \begingroup
+    \let\bxjy@ttfname@ptn\relax
+    \ifnum\pdfmatch{\bxjy@Rx@tp@a}{\bxjy@ttfname}>\z@
+      \bxjy@set@match\bxjy@ptnA{1}\bxjy@set@match\bxjy@ptnBC{2}%
+      \ifnum\pdfmatch{\bxjy@Rx@tp@b}{\bxjy@ptnBC}=\z@
+        \edef\bxjy@ptnBC{\bxjy@ptnBC.ttf}%
+      \fi
+      \ifnum\pdfmatch{\bxjy@Rx@tp@c}{\bxjy@ptnBC}>\z@
+        \bxjy@set@match\bxjy@ptnB{1}\bxjy@set@match\bxjy@ptnC{3}%
+        \bxjy@set@match\bxjy@ptnN{2}%
+        \xdef\bxjy@ttfname@ptn{%
+          {\bxjy@ptnA}{\bxjy@ptnB}{\bxjy@ptnC}{\bxjy@ptnN}}%
+      \fi
+    \fi
+    \ifx\bxjy@ttfname@ptn\relax
+      \@latex@warning@no@line
+       {Option 'ttfname' has an invalid value:\MessageBreak
+        "\bxjy@ttfname"}%
+    \fi
+  \endgroup}
+
+%% \bxjy@make@ttfname\CS{<ttc-name>}{<number>}
+\@onlypreamble\bxjy@make@ttfname
+\def\bxjy@make@ttfname{%
+  \expandafter\bxjy@make@ttfname@a\bxjy@ttfname@ptn}
+\@onlypreamble\bxjy@make@ttfname@a
+\def\bxjy@make@ttfname@a#1#2#3#4#5#6#7{%
+  \numdef\bxjy@tmpa{#4+#7}\numdef\bxjy@tmpb{1#4-#4}%
+  \ifnum\bxjy@tmpa<\bxjy@tmpb
+    \numdef\bxjy@tmpa{\bxjy@tmpa+\bxjy@tmpb}%
+    \edef\bxjy@tmpa{\expandafter\@gobble\bxjy@tmpa}%
+  \fi
+  \edef\bxjy@tmpb{\detokenize{#6}}%
+  \ifnum\pdfmatch{\bxjy@Rx@fn@a}{\bxjy@tmpb}>\z@
+    \bxjy@set@match\bxjy@tmpb{1}%
+  \fi
+  \edef#5{#1\bxjy@tmpb#2\bxjy@tmpa#3}}
+
+%% set the pattern
+\unless\ifx\bxjy@ttfname\@empty
+  \ifdefined\pdfmatch
+    \bxjy@set@ttfname@ptn
+  \else
+    \bxjy@error
+     {Option 'ttfname' cannot be used because your\MessageBreak
+      pdfTeX engine is too old}\@ehc
+  \fi
+\fi
+
+%% \bxjy@modify@fontname
+\@onlypreamble\bxjy@modify@fontname
+\def\bxjy@modify@fontname{%
+  \bxly@check@ttc\FONT
+  \unless\ifx\bxjy@ttc@info\relax
+    \ifx\bxjy@ttfname@ptn\relax
+      \bxjy@error{pdfTeX does not support TTC}\@eha
+    \else
+      \edef\bxjy@tmpa{\noexpand\FONT\bxjy@ttc@info}%
+      \expandafter\bxjy@make@ttfname\bxjy@tmpa
+    \fi
+  \fi}
+
+%% \bxly@check@ttc{<name>}
+\@onlypreamble\bxly@check@ttc
+\ifdefined\pdfmatch
+\def\bxly@check@ttc#1{%
+  \ifnum\pdfmatch{^:([0-9]+):(.*)}{#1}>\z@
+    \bxjy@set@match\bxjy@tmpa{1}\bxjy@set@match\bxjy@tmpb{2}%
+    \edef\bxjy@ttc@info{{\bxjy@tmpb}{\bxjy@tmpa}}%
+  \else\ifnum\pdfmatch{\bxjy@Rx@fn@b}{#1}>\z@
+    \edef\bxjy@ttc@info{{#1}{0}}%
+  \else\let\bxjy@ttc@info\relax
+  \fi\fi}
+\else
+\def\bxjy@check@ttc#1{\let\bxjy@ttc@info\relax}
+\fi
+
 %--------------------------------------- fontmap internals
 
 %% \bxjy@noembed
@@ -475,7 +583,8 @@
   \let\bxjy@spec\@empty
 \else\ifx\bxjy@driver\bxjy@pdftex
   \def\bxjy@entry@sub#1{%<tfm-spec>
-    \pdfmapline{=#1 <\FONT}}
+    \bxjy@modify@fontname
+    \unless\ifx\FONT\relax \pdfmapline{=#1 <\FONT}\fi}
 \else % invalid in dvips
 \fi\fi
 
