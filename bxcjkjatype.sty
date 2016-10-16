@@ -913,6 +913,34 @@
 %% Invokes first-CJK hook at begin-document
 \AtBeginDocument{\bxjy@first@cjk@use@hook}
 
+%--------------------------------------- PDF-string hack
+
+%%<+> \bxcjkjatypeHyperrefPatchDone
+%% Informs that the patch is applied.
+\let\bxcjkjatypeHyperrefPatchDone=t
+
+%% prepare
+\begingroup
+  \CJK@input{UTF8.bdg}% emerge CJK@UTF8Binding
+\endgroup
+%% register to \pdfstringdefPreHook
+\g@addto@macro\pdfstringdefPreHook{%
+  \@nameuse{CJK@UTF8Binding}% enable UTF8 decoder
+  \ifx~\bxjy@@CJKtilde % \CJKtilde is effective
+    \let\bxjy@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
+    \let\HyPsd@LetUnexpandableSpace\bxjy@LetUnexpandableSpace
+    \let~\@empty
+  \fi
+}
+\def\bxjy@@CJKtilde{\CJKecglue\ignorespaces}
+%% patch to \HyPsd@LetUnexpandableSpace
+\def\bxjy@@tildecmd{~}
+\def\bxjy@LetUnexpandableSpace#1{%
+  \def\bxjy@tmpa{#1}\ifx\bxjy@tmpa\bxjy@@tildecmd\else
+    \bxjy@org@LetUnexpandableSpace#1%
+  \fi
+}
+
 %--------------------------------------- preset font mappings
 
 %% \bxjy@declare@preset{<name>}{<text>}
