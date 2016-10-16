@@ -27,6 +27,10 @@ package supports only UTF-8.
 
   - `*.sty` → $TEXMF/tex/latex/BXcjkjatype
 
+### License
+
+This package is distributed under the MIT License.
+
 The bxcjkjatype Package
 -----------------------
 
@@ -73,6 +77,11 @@ explanation of this feature.
   * `oneweight`, `nooneweight`: The same as in pxchfon.
   * One can use font preset options (such as `ms`) which are available
     in pxchfon (except obsolete ones).
+  * `ttfname=<pattern>`: Specifies the pattern of the TTF font names
+    which are used when TTC substitution is employed. For example,
+    when `ttfname=*_1` is given, the font “index 0 of mogam.ttc” will
+    map to “mogam_1.ttf”, and similarly, “index 1” to “mogam_2.ttf”
+    and so on.
   * `ipaex-type1`: Disables the font management of this package and
     directly uses the families provided by the ipaex-type1 package,
     namely `ipxm` and `ipxg`. In this setting the value of `\mcdefault`
@@ -86,8 +95,8 @@ explanation of this feature.
 
   * `scale=<real>`: Sets the scaling factor for CJK fonts.
 
-Note: One cannot employ the scaling when using the font setting of the
-`ipaex-type1` option.
+(With version 0.3 or later, one can employ the scaling even with the
+`ipaex-type1` option.)
 
 #### Other options
 
@@ -102,6 +111,13 @@ Note: One cannot employ the scaling when using the font setting of the
     supported only by `pdftex` and `dvipdfmx`, and these two values are
     auto-detected (`pdftex` is default in PDF mode and `dvipdfmx` in
     DVI mode). Thus one will never need to specify the driver.
+  * `substmingoth`: Applies the substituion of families `min`, `goth`
+    and `maru` (used conventionally for Japanese) with families `mc`,
+    `gt` and `mg` (standard in this package).
+  * `nosubstmingoth` (default): Negation of `substmingoth`.
+  * `boldbyembolden` (default): Changes the implemention of `\CJKbold`
+    (pseudo-bold) from “overstriking” to “synthetic emboldening”.
+  * `noboldbyembolden`: Negation of `boldbyembolden`.
 
 ### Usage
 
@@ -240,17 +256,25 @@ and thus `\setlightminchofont` does nothing useful.
 Revision History
 ----------------
 
-  * Version 0.2c <2013/10/18>
+  * Version 0.3  ‹2016/10/15›
+      - Made the vertical writing work well (with CJKvert).
+      - Avoided garbling of PDF strings created by hyperref.
+      - Allowed font scaling even when `ipaex-type1` is set.
+      - Added `boldbyembolden` feature.
+      - Added `ttfname` option.
+      - Added `substmingoth` option.
+
+  * Version 0.2c ‹2013/10/18›
       - Added support of CJK font scaling.
       - Added `\CJKforce`, `\CJKunforce`, `\@`.
 
-  * Version 0.2b <2013/09/28>
+  * Version 0.2b ‹2013/09/28›
       - Added `\UTF`, `\CJKecglue`.
 
-  * Version 0.2a <2013/08/08>
+  * Version 0.2a ‹2013/08/08›
       - Added `autotilde` option.
 
-  * Version 0.2 <2013/08/08>
+  * Version 0.2  ‹2013/08/08›
       - The first public version.
 
 --------------------
