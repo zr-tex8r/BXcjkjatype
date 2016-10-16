@@ -15,8 +15,10 @@
 
 %--------------------------------------- helpers
 
-%% variables
+%% switches
 \newif\ifbxjy@ok
+\newif\ifbxjy@default@set
+\newif\ifbxjy@byembolden
 
 %% unique tokens
 \def\bxjy@mark{\bxjy@mark@}
@@ -147,7 +149,7 @@
 \fi
 
 %% Consistency check
-\ifx i\bxjy@oneweight \unless\ifx\bxjy@main@preset\relax
+\ifbxjy@ipaex \unless\ifx\bxjy@main@preset\relax
   \bxjy@error{Preset options cannot go with 'ipaex-type1'}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
@@ -155,9 +157,6 @@
   \bxjy@error{Preset options require a valid driver}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
-%\ifx i\bxjy@oneweight \unless\ifx\bxjy@scale\relax
-%  \bxjy@error{Scaling cannot go with 'ipaex-type1'}\@ehc
-%\fi\fi
 \ifx \bxjy@driver\bxjy@none
   \bxjy@boldbyemboldenfalse
 \fi
@@ -286,7 +285,7 @@
 }
 
 %%<*> \setCJKfamilydefault{<fam>}
-\newbool{bxjy@default@set}
+%\newif\ifbxjy@default@set
 \newrobustcmd*\setCJKfamilydefault[1]{%
   \bxjy@default@settrue
   \CJKencfamily{UTF8}{#1}}
@@ -766,7 +765,7 @@
 \ifbxjy@boldbyembolden %<*boldbyembolden>
 
 %<*>\CJKboldbyembolden/\CJKnoboldbyembolden
-\newbool{bxjy@byembolden}
+%\newif\ifbxjy@byembolden
 \newcommand*{\CJKboldbyembolden}{\bxjy@byemboldentrue}
 \newcommand*{\CJKnoboldbyembolden}{\bxjy@byemboldenfalse}
 \CJKboldbyembolden % initial value
