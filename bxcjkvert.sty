@@ -1,0 +1,127 @@
+%%
+%% This is file 'bxcjkvert.sty'.
+%% 
+%% Copyright (c) 2016 Takayuki YATO (aka. "ZR")
+%%   GitHub:   https://github.com/zr-tex8r
+%%   Twitter:  @zr_tex8r
+%%
+%% This package is distributed under the MIT License.
+%%
+
+%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bxcjkvert}[2016/11/30 v0.4pre]
+\def\bxjt@pkgname{bxcjkvert}
+
+%--------------------------------------- general
+
+%% switches
+\newif\ifbxjt@linestretch
+\newif\ifbxjt@resetfont@@
+
+%% packages
+\RequirePackage{etoolbox}
+\RequirePackage{keyval}
+\RequirePackage{CJKvert}
+
+\AtEndOfPackage{%
+  \undef\bxjt@tmpa}
+
+%--------------------------------------- options
+
+%% \bxjt@set@choice
+\@onlypreamble\bxjt@set@choice
+\def\bxjt@set@choice#1#2{%
+  \ifcsundef{bxjt@#1@@#2}{%
+    \PackageError\bxjt@pkgname
+     {Invalid #1 value: '#2'}\@ehc
+  }{\csuse{bxjt@#1@@#2}}}
+
+%%<*> \bxcjkvertsetup{...}
+\newcommand*{\bxcjkvertsetup}[1]{%
+  \edef\bxjt@tmpa{\noexpand\setkeys{bxjt}{#1}%
+  }\bxjt@tmpa}
+
+%% 'usebaselinestretch'
+\def\bxjt@usebaselinestretch@@true{%
+  \CJK@useBaselinestretch@true \bxjt@linestretchtrue}
+\def\bxjt@usebaselinestretch@@false{%
+  \CJK@useBaselinestretch@false \bxjt@linestretchtrue}
+\def\bxjt@usebaselinestretch@@retain{%
+  \CJK@useBaselinestretch@true \bxjt@linestretchfalse}
+\ifCJK@useBaselinestretch@
+  \bxjt@usebaselinestretch@@true
+\else
+  \bxjt@usebaselinestretch@@retain
+\fi
+\define@key{bxjt}{usebaselinestretch}[true]{%
+  \bxjt@set@choice{usebaselinestretch}{#1}}
+%% 'resetfont'
+%\newif\ifbxjt@resetfont
+\define@key{bxjt}{resetfont}[true]{%
+  \bxjt@set@choice{resetfont}{#1}}
+%% 'main'
+\let\bxjt@main\relax
+\def\bxjt@main@@true{\def\bxjt@main{\CJKvert}}
+\def\bxjt@main@@false{\def\bxjt@main{\CJKhorz}}
+\def\bxjt@main@@retain{\let\bxjt@main\relax}
+\define@key{bxjt}{main}[true]{%
+  \bxjt@set@choice{main}{#1}}
+% dispatch
+\DeclareOption*{%
+  \bxcjkvertsetup{\CurrentOption}}
+\ProcessOptions*
+
+%--------------------------------------- patching
+
+%% emerge \CJK@horzBaselinestretch
+\ifx\CJK@horzBaselinestretch\@undefined
+  \edef\CJK@horzBaselinestretch{\baselinestretch}
+\fi
+
+%% redefine \CJKvert/\CJKhorz
+\protected\def\CJKvert{%
+  \CJK@vertical@true
+  \gdef\CJK@direction{v}%
+  %
+  \unless\ifbxjt@linestretch
+  \else\ifCJK@useBaselinestretch@
+    \edef\CJK@horzBaselinestretch{\baselinestretch}%
+    \dimen@\CJK@horzBaselinestretch\p@
+    \dimen@\CJKbaselinestretch\dimen@
+    \edef\baselinestretch{\strip@pt\dimen@}%
+  \else
+    \edef\baselinestretch{\CJKbaselinestretch}%
+  \fi\fi
+  %
+  \ifbxjt@resetfont@@ \normalfont
+  \else \selectfont
+  \fi}
+\protected\def\CJKhorz{%
+  \CJK@vertical@false
+  \gdef\CJK@direction{h}%
+  %
+  \unless\ifbxjt@linestretch
+  \else\ifCJK@useBaselinestretch@
+    \edef\baselinestretch{\CJK@horzBaselinestretch}%
+  \else
+    \edef\baselinestretch{1}%
+  \fi\fi
+  %
+  \ifbxjt@resetfont@@ \normalfont
+  \else \selectfont % apply \baselinestretch
+  \fi}
+
+
+
+%% begin-document hoooks
+\def\bxjt@tmpa#1\CJKvert#2\bxjt@tmpa{%
+  \def\@begindocumenthook{#1#2}%
+}\expandafter\bxjt@tmpa\@begindocumenthook\relax\bxjt@tmpa
+  % \relax, so that #2 would not be a sole {...}
+\AfterEndPreamble{%
+  \bxjt@main}
+
+%--------------------------------------- all done
+\endinput
+%% EOF
