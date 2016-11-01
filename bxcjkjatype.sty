@@ -99,6 +99,9 @@
 \newif\ifbxjy@substmin
 \DeclareOption{substmingoth}{\bxjy@substmintrue}
 \DeclareOption{nosubstmingoth}{\bxjy@substminfalse}
+\newif\ifbxjy@tildespace
+\DeclareOption{CJKtildeasspace}{\bxjy@tildespacetrue}
+\DeclareOption{noCJKtildeasspace}{\bxjy@tildespacefalse}
 % preset spec options
 % NB. All of the (non-obsolete) options of pxchfon are also
 % listed here, but some of them are useless in this package.
@@ -925,8 +928,13 @@
 
 %%<+> \bxcjkjatypeHyperrefPatchDone
 %% Informs that the patch is applied.
+\ifbxjy@tildespace
+\let\bxcjkjatypeHyperrefPatchDone=f
+\else
 \let\bxcjkjatypeHyperrefPatchDone=t
+\fi
 
+\unless\ifbxjy@tildespace   %----<*!CJKtildeasspace>
 %% prepare
 \begingroup
   \CJK@input{UTF8.bdg}% emerge CJK@UTF8Binding
@@ -948,6 +956,7 @@
     \bxjy@org@LetUnexpandableSpace#1%
   \fi
 }
+\fi                         %----</!CJKtildeasspace>
 
 %--------------------------------------- preset font mappings
 
