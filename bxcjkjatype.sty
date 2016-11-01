@@ -100,13 +100,16 @@
 \DeclareOption{substmingoth}{\bxjy@substmintrue}
 \DeclareOption{nosubstmingoth}{\bxjy@substminfalse}
 % preset spec options
+% NB. All of the (non-obsolete) options of pxchfon are also
+% listed here, but some of them are useless in this package.
 \def\bxjy@all@main@preset{%
   %(uniweight)
   ms,ipa,ipaex,%
   %(multiweight)
-  ms-hg,ipa-hg,moga-mobo,moga-maruberi,%
-  kozuka-pro,kozuka-pr6,kozuka-pr6n,%
-  hiragino-pro,hiragino-pron,morisawa-pro,morisawa-pr6n}
+  ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-maruberi,%
+  kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
+  hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx}
 \let\bxjy@main@preset\relax
 \def\bxjy@do#1{\DeclareOption{#1}{\def\bxjy@main@preset{#1}}}
 \@for\bxjy@x:=\bxjy@all@main@preset\do{%
@@ -998,6 +1001,9 @@
 \bxjy@declare@preset{ipa-hg}{%
   \bxjy@multiweight{ipam.ttf}{ipam.ttf}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipag.ttf}{hgrsmp.ttf}}
+\bxjy@declare@preset{ipaex-hg}{%
+  \bxjy@multiweight{ipaexm.ttf}{ipaexm.ttf}{:0:hgrme.ttc}%
+  {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipaexg.ttf}{hgrsmp.ttf}}
 \bxjy@declare@preset{moga-mobo}{%
   \bxjy@enable@switch@realfont
   \bxjy@multiweight{\bxjy@MI mogam.ttc}{\bxjy@MI mogam.ttc}%
@@ -1033,6 +1039,16 @@
   \bxjy@multiweight{HiraMinProN-W2.otf}{HiraMinProN-W3.otf}%
    {HiraMinProN-W6.otf}{HiraKakuProN-W3.otf}{HiraKakuProN-W6.otf}%
    {HiraKakuStdN-W8.otf}{HiraKakuProN-W6.otf}{HiraMaruProN-W4.otf}}
+\bxjy@declare@preset{hiragino-elcapitan-pro}{%
+  \usecmapforalphabet
+  \bxjy@multiweight{HiraMinPro-W2.otf}{:1:HiraginoSerif-W3.ttc}%
+   {:1:HiraginoSerif-W6.ttc}{:3:HiraginoSans-W3.ttc}{:3:HiraginoSans-W6.ttc}%
+   {:2:HiraginoSans-W8.ttc}{:3:HiraginoSans-W6.ttc}{:0:HiraginoSansR-W4.ttc}}
+\bxjy@declare@preset{hiragino-elcapitan-pron}{%
+  \usecmapforalphabet
+  \bxjy@multiweight{HiraMinProN-W2.otf}{:0:HiraginoSerif-W3.ttc}%
+   {:0:HiraginoSerif-W6.ttc}{:2:HiraginoSans-W3.ttc}{:2:HiraginoSans-W6.ttc}%
+   {:3:HiraginoSans-W8.ttc}{:2:HiraginoSans-W6.ttc}{:1:HiraginoSansR-W4.ttc}}
 \bxjy@declare@preset{morisawa-pro}{%
   \usecmapforalphabet
   \bxjy@multiweight{A-OTF-RyuminPro-Light.otf}{A-OTF-RyuminPro-Light.otf}%
@@ -1045,6 +1061,19 @@
    {A-OTF-FutoMinA101Pr6N-Bold.otf}{A-OTF-GothicBBBPr6N-Medium.otf}%
    {A-OTF-FutoGoB101Pr6N-Bold}{A-OTF-MidashiGoPr6N-MB31.otf}%
    {A-OTF-GothicBBBPr6N-Medium.otf}{A-OTFJun101Pr6N-Light.otf}}
+\bxjy@declare@preset{yu-win}{%
+  \bxjy@multiweight{yuminl.ttf}{yumin.ttf}%
+   {yumindb.ttf}{yugothic.ttf}{yugothib.ttf}%
+   {yugothib.ttf}{yugothic.ttf}{yugothic.ttf}}
+\bxjy@declare@preset{yu-win10}{%
+  \bxjy@multiweight{yuminl.ttf}{yumin.ttf}%
+   {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
+   {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
+\bxjy@declare@preset{yu-osx}{%
+  \usecmapforalphabet
+  \bxjy@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
+   {YuMin-Demibold.otf}{YuGo-Medium.otf}{YuGo-Bold.otf}%
+   {YuGo-Bold.otf}{YuGo-Medium.otf}{YuGo-Medium.otf}}
 
 %% ... and invokes the specified one!
 \ifx\bxjy@main@preset\relax\else
