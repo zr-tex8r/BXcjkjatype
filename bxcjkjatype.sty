@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxcjkjatype}[2016/10/15 v0.3]
+\ProvidesPackage{bxcjkjatype}[2016/11/30 v0.4pre]
 \def\bxjy@pkgname{bxcjkjatype}
 
 %% definitions
@@ -133,6 +133,10 @@
 \let\bxjy@ttfname\@empty
 \define@key{bxjy}{ttfname}{%
   \def\bxjy@ttfname{#1}}
+% 'vertical-setup={<opt>,...}'
+\let\bxjy@bxcjkvert@opt\@empty
+\define@key{bxjy}{vertical-setup}{%
+  \g@addto@macro\bxjy@bxcjkvert@opt{,#1}}
 %% Dispatch options
 \ProcessOptions*
 
@@ -237,20 +241,15 @@
   \bxjy@error{Invalid value of 'vertical': \bxjy@vertical}\@ehc
 }
 \ifcase\bxjy@vert %none
-  \AfterEndPreamble{\csuse{CJKhorz}}
 \or %sub
-  \RequirePackage{CJKvert}[]%
-  \AfterEndPreamble{\CJKhorz}
+  \edef\bxjy@tmpa{\noexpand\RequirePackage
+      [\bxjy@bxcjkvert@opt,main=false]{bxcjkvert}[]}%
+  }\bxjy@tmpa
 \or %main
-  \RequirePackage{CJKvert}[]%
-  \AfterEndPreamble{\CJKvert}
+  \edef\bxjy@tmpa{\noexpand\RequirePackage
+      [\bxjy@bxcjkvert@opt,main=true]{bxcjkvert}[]}%
+  }\bxjy@tmpa
 \fi
-\AtBeginDocument{%
-  \@ifpackageloaded{CJKvert}{%
-    \bxjy@patch@CJKsymbol@CJKvert
-    \patchcmd{\CJKvert}{\normalfont}{\bxjy@normalafont}{}{}%
-    \patchcmd{\CJKhorz}{\normalfont}{\bxjy@normalafont}{}{}%
-  }{}}
 
 %--------------------------------------- user interface
 
