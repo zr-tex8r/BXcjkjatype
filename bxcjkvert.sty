@@ -115,8 +115,8 @@
 
 
 %% begin-document hoooks
-\def\bxjt@tmpa#1\CJKvert#2\bxjt@tmpa{%
-  \def\@begindocumenthook{#1#2}%
+\long\def\bxjt@tmpa#1\CJKvert#2\bxjt@tmpa{%
+  \edef\@begindocumenthook{\unexpanded{#1#2}}%
 }\expandafter\bxjt@tmpa\@begindocumenthook\relax\bxjt@tmpa
   % \relax, so that #2 would not be a sole {...}
 \AfterEndPreamble{%
