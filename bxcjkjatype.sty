@@ -80,8 +80,10 @@
 \DeclareOption{everypage}{\bxjy@everypagetrue}
 \DeclareOption{noeverypage}{\bxjy@everypagefalse}
 \newif\ifbxjy@ipaex
+\newif\ifbxjy@defaultmin
 \let\bxjy@oneweight=f
 \DeclareOption{ipaex-type1}{\bxjy@ipaextrue}
+\DeclareOption{defaultmingoth}{\bxjy@defaultmintrue}
 \DeclareOption{oneweight}{\let\bxjy@oneweight=t}
 \DeclareOption{nooneweight}{\let\bxjy@oneweight=f}
 \newif\ifbxjy@autotilde
@@ -726,6 +728,15 @@
     \let\extract@font\relax \pickup@font
   \endgroup}
 
+%--------------------------------------- defaultmingoth
+\ifbxjy@defaultmin
+
+%% default changed
+\renewcommand{\mcdefault}{min}
+\renewcommand{\gtdefault}{goth}
+\renewcommand{\mgdefault}{maru}
+
+\fi
 %--------------------------------------- ipaex-type1
 \ifbxjy@ipaex
 
