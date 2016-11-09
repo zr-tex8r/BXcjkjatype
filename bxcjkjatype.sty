@@ -127,18 +127,15 @@
 \let\bxjy@scale\relax
 \define@key{bxjy}{scale}{%
   \def\bxjy@scale{#1}}
-% 'verrtical=<val>'
-\let\bxjy@vertical\@empty
-\define@key{bxjy}{vertical}[true]{%
-  \def\bxjy@vertical{#1}}
 % 'ttfname=<val>'
 \let\bxjy@ttfname\@empty
 \define@key{bxjy}{ttfname}{%
   \def\bxjy@ttfname{#1}}
-% 'vertical-setup={<opt>,...}'
-\let\bxjy@bxcjkvert@opt\@empty
-\define@key{bxjy}{vertical-setup}{%
-  \g@addto@macro\bxjy@bxcjkvert@opt{,#1}}
+% 'vertical' (removed)
+\define@key{bxjy}{vertical}[true]{%
+  \PackageError\bxjy@pkgname
+   {Option 'vertical' is abolished}%
+   {\@ehc}}
 %% Dispatch options
 \ProcessOptions*
 
@@ -224,34 +221,6 @@
   \gappto\bxjy@first@cjk@use@hook}
 \newcommand*\EveryCJKUse{%
   \gappto\bxjy@every@cjk@use@hook}
-
-%--------------------------------------- vertical
-
-%% constants
-\chardef\bxjy@vert@none=0
-\chardef\bxjy@vert@false=0
-\chardef\bxjy@vert@=0
-\chardef\bxjy@vert@sub=1
-\chardef\bxjy@vert@main=2
-\chardef\bxjy@vert@true=2
-
-%% \bxjy@vert
-\let\bxjy@vert\bxjy@vert@none
-\ifcsdef{bxjy@vert@\bxjy@vertical}{%
-  \letcs\bxjy@vert{bxjy@vert@\bxjy@vertical}
-}{%else
-  \bxjy@error{Invalid value of 'vertical': \bxjy@vertical}\@ehc
-}
-\ifcase\bxjy@vert %none
-\or %sub
-  \edef\bxjy@tmpa{\noexpand\RequirePackage
-      [\bxjy@bxcjkvert@opt,main=false]{bxcjkvert}[]}%
-  }\bxjy@tmpa
-\or %main
-  \edef\bxjy@tmpa{\noexpand\RequirePackage
-      [\bxjy@bxcjkvert@opt,main=true]{bxcjkvert}[]}%
-  }\bxjy@tmpa
-\fi
 
 %--------------------------------------- user interface
 
