@@ -1,0 +1,380 @@
+% LuaLaTeX 文書; 文字コードは UTF-8
+\documentclass[a4paper]{ltjsarticle}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[unicode,colorlinks,hyperfootnotes=false]{hyperref}
+\hypersetup{linkcolor=blue!75!black,urlcolor=green!45!black}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\usepackage{verbatim}
+\newenvironment{myverbatim}
+  {\begin{quote}\small\verbatim}
+  {\endverbatim\end{quote}}
+\newcommand{\PkgVersion}{0.4}
+\newcommand{\PkgDate}{2016/11/11}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newcommand{\Means}{：\quad}
+\newcommand{\jemph}{\textsf}
+\newcommand{\wbr}{\linebreak[0]}
+\providecommand{\pTeX}{p\TeX}
+\providecommand{\pLaTeX}{p\LaTeX}
+\providecommand{\pdfTeX}{pdf\/\TeX}
+%-----------------------------------------------------------
+\begin{document}
+\title{\Pkg{bxcjkjatype} パッケージ}
+\author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
+\date{v\PkgVersion\quad[\PkgDate]}
+\maketitle
+
+\begin{abstract}
+本パッケージは、日本語組版に適した\Pkg{CJK}パッケージの設定を提供する。
+その上で、{\pLaTeX}ユーザにとって\Pkg{CJK}パッケージの使用が容易に
+するために、{\pLaTeX}カーネルや{\pLaTeX}用パッケージのものに
+類似した命令を提供する。
+\end{abstract}
+
+\tableofcontents
+
+%===========================================================
+\section{パッケージ読込}
+\label{sec:loading}
+
+\begin{verbatim}
+\usepackage[<option>,...]{bxcjkjatype}
+\end{verbatim}
+
+利用可能なオプションを以下で挙げる。
+
+%-------------------
+\subsection{自動囲み込み}
+
+文書本体を |CJK(*)| 環境で自動的かつ安全に囲うためのオプション。
+文書中に多量のCJKテキストが含まれる場合、
+或いは「動く引数」にCJKテキストが含まれる場合は
+これを指定するのが適切である。
+
+\begin{itemize}
+\item |whole|、|wholeCJK*|\Means
+  文書全体を |CJK*| 環境で囲む。
+  （厳密に言うと |\begin{uCJK*}～\end{uCJK*}| で囲む。）
+\item |wholeCJK|\Means
+  文書全体を |CJK| 環境で囲む。
+  （厳密に言うと |\begin{uCJK}～\end{uCJK}| で囲む。）
+\item |nowhole|（既定）\Means
+  |wholeCJK*| 及び |wholeCJK| の否定。
+\end{itemize}
+
+%-------------------
+\subsection{「自動チルダ」}
+
+|autotilde| オプションを指定すると、
+|\CJKtilde| が自動的に呼び出されて |~| が和欧文間空白（四分空き）
+の意味になる。
+なお、|\CJKtilde| 有効時は |\nbs| で非分割欧文空白（本来の |~|
+の意味）が挿入できる。
+また、|\standardtilde| は |\CJKtilde| の効力を打ち消す。
+（これらは\Pkg{CJK}パッケージの機能である。）
+
+\begin{itemize}
+\item |autotilde|\Means
+  全ての |CJK(*)| 環境の先頭で |\autotilde| が呼び出されるようにする。
+\item |noautotilde|（既定）\Means
+  |autotilde| の否定。
+\end{itemize}
+
+%-------------------
+\subsection{フォントマップ設定}
+
+\href{http://www.ctan.org/pkg/pxchfon}{\Pkg{pxchfon}パッケージ}%
+と同等のフォントマップのプリセットが利用できる。
+詳細についてはそちらの解説文書を参照されたい。
+
+\begin{itemize}
+\item |oneweight|、|nooneweight|\Means
+  \Pkg{pxchfon}と同様。
+\item \Pkg{pxchfon}で利用可能なプリセットオプション（|ms| 等）が
+  利用できる。
+  （旧式のものを除く。）
+\item |ttfname=|\Meta{パターン}\Means
+  TTC代替（後述）を行う場合のTTFフォント名のパターンを指定する。
+\item |ipaex-type1|\Means
+  本パッケージのフォント管理を無効にし、\Pkg{ipaex-type1}パッケージ
+  のファミリ（|ipxm| と |ipxg|）を直接用いる。
+  この設定では |\mcdefault| の値は |ipxm| に、|\gtdefault| の
+  値は |ipxg| になる。
+\end{itemize}
+
+%-------------------
+\subsection{CJKフォントスケール}
+
+\begin{itemize}
+\item |scale=|\Meta{実数}\Means
+  CJKフォントに対するスケール値を設定する。
+\end{itemize}
+
+\Note 0.3版より、|ipaex-type1| 指定時もCJKフォントスケールが
+利用できるようになった。
+
+%-------------------
+\subsection{PDF文字列中の“四分空き”の扱い}
+
+{\LaTeX}の文法において、|~| は非分割空白を表す。
+従って、\Pkg{hyperref}パッケージがPDF文字列を生成する際には、
+{\LaTeX}テキスト中の |~| は空白文字に変換される。
+
+ところが、\Pkg{CJK}パッケージの |\CJKtilde| が有効である場合、
+|~| の意味が“四分空き”に変わる。
+この“四分空き”は組版上の現象でありテキスト情報としての空白ではない。
+従って、本パッケージを読み込んだ場合には、|\CJKtilde| 適用
+時の |~| は、PDF文字列への変換の際には削除される仕様にしている。
+
+さらに、この挙動は、オプションで制御することができる。
+
+\begin{itemize}
+\item |noCJKtildeasspace|（既定）\Means
+  |\CJKtilde| 適用時の |~| はPDF文字列の生成の際には削除される。
+\item |CJKtildeasspace|\Means
+  |\CJKtilde| 適用時の |~| はPDF文字列の生成の際には空白文字に
+  変換される。
+  （本パッケージを使わない場合の挙動と同じ。）
+\end{itemize}
+
+%-------------------
+\subsection{その他のオプション}
+
+\begin{itemize}
+\item |everypage|\Means
+  フォントマップ情報を出力DVI文書の全てのページに出力する。
+  |dvipdfmx| ドライバでのみ有効。
+\item |noeverypage|（既定）\Means
+  |everypage| の否定。
+\item ドライバオプション\Means
+  |pdftex|、|dvipdfmx|、|dvips|、|none| が指定できる。
+  ドライバ設定は既定（ipaex-type1）以外のフォントマップの使用時に
+  のみ意味をもつ。
+  さらに、フォントマップ変更は |pdftex| と |dvipdfmx| でのみ
+  サポートされ、またこの2つの値は常に自動判定可能
+  （PDFモードでは |pdftex|、DVIモードでは |dvipdfmx| が既定）
+  なので、実際にはドライバを指定する必要はない。
+\item |substmingoth|\Means
+  CJKパッケージの日本語用総称ファミリとして慣習的に使われている
+  ファミリの |min|／|goth|／|maru| について、{\LaTeX} レベルで、
+  本パッケージにおける標準ファミリである |mc|／|gt|／|mg| への
+  代替を設定する。
+  これにより、|min| 等のファミリの使用を前提とした日本語用
+  テンプレート等を使う場合においても、論理フォントレベルでの代替設定を
+  行う必要がなくなる。
+\item |nosubstmingoth|（既定）\Means
+  |substmingoth| の否定。
+\item |boldbyembolden|（既定）\Means
+  \Pkg{CJK}パッケージの“擬似太字”（|\CJKbold|）の処理方法を
+  “重ね打ち”から“合成太字”に変更する。
+\item |noboldbyembolden|\Means
+  |boldbyembolden| の否定。
+\end{itemize}
+
+%-------------------
+\subsection{TTC代替}
+
+{\pdfTeX}エンジンはTTC形式のフォントをサポートしていない
+（サポートしているOpenTypeの形式は単体のTTFグリフのものだけである）。
+従って、|\setminchofont| 命令等でTTCフォントを使おうと望むなら、
+適当なツールを使ってTTCフォントファイルを個々のTTFフォントファイル
+に分解する処理を行うことが必須になる。
+
+これはエンジン側の制限仕様のため仕方がないだろう。
+しかし本パッケージを用いる場合には他に問題がある。
+変換後のTTFフォントはファイル名が元のものと異なるため、
+プリセット設定（|mobo-moga| 等のオプション）が使えないのである。
+これを解決するために、0.3版で |ttfname| オプションが新設された。
+
+例えば、パッケージ読込時に |ttfname=*_1| が指定されたとする。
+この状態で本パッケージの処理において「mogam.ttcの最初（0番）」
+が要求された場合、代わりに「mogam\_1.ttf」というファイルが使われる。
+同様に、「mogam.ttcの1番、2番、……」については
+「mogam\_2.ttf」「mogam\_3.ttf」……での代替が行われる。
+
+|ttfname| で指定するファイル名のパターンには「|*_1|」
+「|TEMP-*-00.TTF|」のように「|*| を1つ含み、数字列を含む文字列」
+が指定できる。
+この |*| の部分は要求のTTCファイルのベース名（|mogam| 等）で
+置き換えられ、かつ、拡張子がない場合は |.ttf| が補われる。
+その結果の文字列がTTCの最初（0番）のフォントに対する
+代替ファイル名となる。
+後続（1番、2番、……）の代替ファイル名は数字部分を
+インクリメントしたものになる。
+
+%===========================================================
+\section{機能}
+\label{sec:usage}
+
+%-------------------
+\subsection{CJKフォントの選択}
+
+本パッケージでは、{\pLaTeX} +
+\href{http://www.ctan.org/pkg/japanese-otf}{\Pkg{japanese-otf}パッケージ}%
+で用いられるものと同等の3つの「総称」CJKファミリを用意する：
+明朝（|\mcfamily|）、ゴシック（|\gtfamily|）、
+丸ゴシック（|\mgfamily|）。
+既定では\Pkg{ipaex-type1}パッケージのフォントが割り当てられている：
+明朝→IPAex明朝、ゴシック→IPAexゴシック。
+この割り当ては変更可能である。
+
+\begin{itemize}
+\item |\mcfamily|\Means
+  CJKファミリを明朝ファミリに変更する。
+  |\CJKfamily{mcdefault}| と等価である。
+\item |\gtfamily|\Means
+  CJKファミリをゴシックファミリに変更する。
+  |\CJKfamily{gtdefault}| と等価である。
+\item |\mgfamily|\Means
+  CJKファミリを丸ゴシックファミリに変更する。
+  |\CJKfamily{mgdefault}| と等価である。
+\end{itemize}
+
+高度な命令\Means
+
+\begin{itemize}
+\item |\mcdefault|／|\gtdefault|／|\mgdefault|\Means
+  総称ファミリに対応するCJKファミリ名である。
+  標準の割当ではこれらの値は |mc|／|gt|／|mg| でありこの割当が
+  既定で用いられる。
+\item |\setCJKfamilydefault{|\Meta{CJKファミリ}|}|\Means
+  既定のCJKファミリを設定する。
+  この既定値は、ある種の命令（例えば |\CJKfamily{}|
+  や |\begin{CJK}{UTF8}{}|）でファミリ名が省略された時に用いられる。
+  （再定義後の）|\normalfont| はCJKファミリをこの命令で設定した
+  既定ファミリに変更する。
+
+  この既定ファミリの既定値は、文書の本体の先頭で有効である欧文ファミリ
+  の「対応ファミリ」となる。
+  （\ref{ssec:sync-families}節を参照。）
+\end{itemize}
+
+%-------------------
+\subsection{CJKと欧文のファミリの連動}
+\label{ssec:sync-families}
+
+\Pkg{CJK}パッケージ（および{\pTeX}エンジン）ではCJKと欧文で
+別々の「現在ファミリ」を管理する。
+この取扱は利点もあるが、多くの場合はこの2つの「現在ファミリ」を
+連動させた方が都合がよい。
+このため、本パッケージでは現在欧文フォントを切り替える幾つかの
+{\LaTeX}命令について、CJKファミリを欧文の「対応ファミリ」に
+切り替えるように再定義する。
+ここで「対応ファミリ」は以下のように定められる：
+
+\begin{itemize}
+\item |\rmfamily|（セリフ） → |\mcfamily|（明朝）
+\item |\sffamily|（サンセリフ） → |\gtfamily|（ゴシック）
+\item |\ttfamily|（等幅） → |\gtfamily|（ゴシック）
+\item その他のファミリについては、対応ファミリは |\mcfamily| とする。
+\end{itemize}
+
+再定義される命令：
+
+\begin{itemize}
+\item |\rmfamily|／|\sffamily|／|\ttfamily|\Means
+  本来の動作の後、CJKファミリを欧文ファミリの「対応ファミリ」
+  に変更する。
+\item
+  |\normalfont|\Means
+  CJKファミリを、|\setCJKfamilydefault| 命令により指定された
+  既定CJKファミリに変更する。
+\end{itemize}
+
+|CJK|／|CJK*| 環境の省略系\Means
+
+\begin{itemize}
+\item |\begin{uCJK*}...\end\{uCJK*\}|\Means
+  次のものと等価\Means
+\begin{verbatim}
+\begin{CJK*}{UTF8}{対応ファミリ}...\end{CJK*}
+\end{verbatim}
+  ただし |対応ファミリ| は現在の欧文ファミリの対応ファミリを表す。
+
+  次のものと等価ではないことに注意\Means
+\begin{verbatim}
+\begin{CJK*}{UTF8}{}...\end{CJK*}
+\end{verbatim}
+
+  こちらは既定のCJKファミリを使用する。
+\item |\begin{uCJK}...\end{uCJK}|\Means
+  次のものと等価\Means
+\begin{verbatim}
+\begin{CJK}{UTF8}{対応ファミリ}...\end{CJK}
+\end{verbatim}
+\end{itemize}
+
+%-------------------
+\subsection{フォントマップ設定}
+
+これらの命令の使い方は\Pkg{pxchfon}パッケージの時と同じであるので、
+詳細についてはそちらの解説文書を参照されたい。
+
+\begin{itemize}
+\item |\setminchofont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setgothicfont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setmarugothicfont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setmediumminchofont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setboldminchofont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setmediumgothicfont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setboldgothicfont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\item |\setxboldgothicfont[|\Meta{ID}|]{|\Meta{フォントファイル名}|}|
+\end{itemize}
+
+ところが、{\pdfTeX}エンジンについてはフォントマップの仕様に関して
+重大な制限が存在する。
+TrueTypeグリフであってかつTTC形式でないフォントのみが使用できる。
+（dvipdfmx使用時は全ての種類のOpenTypeフォントが使用可能。）
+
+注意\Means
+本パッケージは「明朝・細字」のフォントをサポートしない。
+従って、|\setlightminchofont| は動作しない。
+
+%-------------------
+\subsection{その他の命令}
+
+\begin{itemize}
+\item |\UTF{|\Meta{16進数字}|}|\Means
+  CJK文字をUnicode符号値で入力する。
+  例えば、|\UTF{5B57}| は |\Unicode{"5B}{"57}| と等価である。
+\item |\CJKforce{|\Meta{文字}…|}|\Means
+  以降は引数の中にある各々の文字をCJK文字として扱う
+  （CJKフォントで出力される）。
+\item
+  |\CJKunforce{|\Meta{文字}…|}|\Means
+  |\CJKforce| の効果を打ち消す。
+\item |\@|\Meta{文字}\Means
+  非ASCII文字の前に |\@| がある場合は、その文字（その出現のみ）を
+  CJK文字として扱う。
+  ASCII文字の前の |\@| は{\LaTeX}本来の意味を保持する。
+\item |\CJKecglue|\Means
+  和欧文間空白を挿入する。
+  |\CJKtilde| が有効な時は |~| はこの命令を呼び出す。
+  この命令をユーザが再定義して和欧文間空白の量を調節することが
+  できる（和文間空白の |\CJKglue| と同様）。
+
+  使用例\Means
+\begin{verbatim}
+\renewcommand{\CJKecglue}{\hspace{0.125em minus 0.125em}}
+\end{verbatim}
+\end{itemize}
+
+%===========================================================
+\section{補足事項}
+\label{sec:remarks}
+
+\begin{itemize}
+\item 本パッケージで標準に用いられるフォントは、例えそれに
+  ipaex-type1のフォントが割り当てられている場合でも、縦書きを
+  サポートしない。
+  しかし\Pkg{ipaex-type1}が提供するファミリ（|ipxm| と |ipxg|）は
+  縦書きをサポートしており、|ipaex-type1| オプションを指定することで
+  それらのファミリを直接使うことができる。
+\end{itemize}
+
+%===========================================================
+\end{document}

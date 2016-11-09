@@ -1,0 +1,368 @@
+% pdfLaTeX document; UTF-8
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,textcomp}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[unicode,colorlinks]{hyperref}
+\hypersetup{linkcolor=blue!75!black,urlcolor=green!45!black}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\usepackage{verbatim}
+\newenvironment{myverbatim}
+  {\begin{quote}\small\verbatim}
+  {\endverbatim\end{quote}}
+\newcommand{\PkgVersion}{0.4}
+\newcommand{\PkgDate}{2016/11/11}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$\textit{#1}$\rangle$}
+\newcommand{\Note}{\par\noindent \emph{Note:}\quad}
+\newcommand{\Means}{:\hspace{1em plus 1em}}
+\newcommand{\wbr}{\linebreak[0]}
+\providecommand{\pTeX}{p\TeX}
+\providecommand{\pLaTeX}{p\LaTeX}
+\providecommand{\pdfTeX}{pdf\/\TeX}
+%-----------------------------------------------------------
+\begin{document}
+\title{The \Pkg{bxcjkjatype} Package}
+\author{Takayuki YATO (aka.~``ZR'')}
+\date{v\PkgVersion\quad[\PkgDate]}
+\maketitle
+
+\begin{abstract}
+This package provides working configuration of the \Pkg{CJK} package
+suitable for Japanese typesetting of moderate quality.
+Moreover, it facilitates use of the \Pkg{CJK} package for {\pLaTeX}
+users, by providing commands that are similar to those used by the
+{\pLaTeX} kernel and some other packages used with it.
+\end{abstract}
+
+\tableofcontents
+
+%===========================================================
+\section{Package Loading}
+\label{sec:loading}
+
+\begin{verbatim}
+\usepackage[<option>,...]{bxcjkjatype}
+\end{verbatim}
+
+The available options are described hereafter.
+
+%-------------------
+\subsection{Options for auto-wrapping}
+
+These options enable one to wrap the document body with a |CJK(*)|
+environment automatically and safely.
+They are suitable when a document contains much amount of CJK text,
+or some ``moving arguments'' hold CJK text.
+
+\begin{itemize}
+\item |whole|, |wholeCJK*|\Means
+  Wraps the whole document body with a |CJK*| environment
+  (precisely speaking, with |\begin{uCJK*}|\ldots\wbr|\end{uCJK*}|).
+\item |wholeCJK|\Means
+  Wraps the whole document body with a |CJK| environment
+  (precisely speaking, with |\begin{uCJK}|\ldots\wbr|\end{uCJK}|).
+\item |nowhole| (default)\Means
+  Negation of |wholeCJK*| or |wholeCJK|.
+\end{itemize}
+
+%-------------------
+\subsection{Options for ``auto-tilde''}
+
+The option |autotilde| triggers automatic invocation of |\CJKtilde|,
+which makes a tilde character (|~|) insert ``shibuaki'' (a thin space
+between alphabetic and ideographic letters) rather than a no-break space
+(standard).
+No-break spaces can still be inserted by the command |\nbs|, and
+|\standardtilde| cancels the effect of |\CJKtilde|.
+(The commands mentioned here belong to \Pkg{CJK} package.)
+
+\begin{itemize}
+\item |autotilde|\Means
+  Makes |\CJKtilde| invoked at the beginning of every |CJK(*)|
+  environment.
+\item |noautotilde| (default)\Means
+  Negation of |autotilde|.
+\end{itemize}
+
+%-------------------
+\subsection{Options for font-mapping}
+
+One can use preset font mappings in the same way as in the
+\href{http://www.ctan.org/pkg/pxchfon}{\Pkg{pxchfon} package}.
+Please refer to the manual of that package for detailed explanation
+of this feature.
+
+\begin{itemize}
+\item |oneweight|, |nooneweight|\Means
+  The same as in \Pkg{pxchfon}.
+\item One can use font preset options (such as |ms|) which are available
+  in \Pkg{pxchfon} (except obsolete ones).
+\item |ttfname=|\Meta{pattern}\Means
+  Specifies the pattern of the TTF font names which are used when TTC
+  substitution is employed.
+  For example, when the option |ttfname=*_1| is given, the font
+  ``index 0 of mogam.ttc'' will map to ``mogam\_1.ttf'', and similarly,
+  ``index 1'' to ``mogam\_2.ttf'' and so on.
+\item |ipaex-type1|\Means
+  Disables the font management of this package and directly uses the
+  families provided by the ipaex-type1 package, namely |ipxm| and |ipxg|.
+  In this setting the value of |\mcdefault| is |ipxm| and the value of
+  |\gtdefault| and |\mgdefault| is |ipxg|, so that the higher level
+  commands (such as |\sffamily| and |\gtfamily|) can work correctly.
+\end{itemize}
+
+%-------------------
+\subsection{Options for CJK font scaling}
+
+\begin{itemize}
+\item |scale=|\Meta{real}\Means
+  Sets the scaling factor for CJK fonts.
+\end{itemize}
+
+(When using version 0.3 or later, one can employ the scaling even with the
+|ipaex-type1| option.)
+
+%-------------------
+\subsection{Options for configuring ``Shibuaki'' in PDF strings}
+
+In {\LaTeX} grammar |~| represents a non-breaking space.
+Accordingly, when the \Pkg{hyperref} package generates PDF strings,
+|~| in {\LaTeX} text will be converted to a space character.
+
+However, when |\CJKtilde| of the \Pkg{CJK} package is effective
+the meaning of |~| changes to ``shibuaki''.
+The shibuaki is device on typesetting and is not a space as text data.
+Thus when this package is loaded, |~| with |\CJKtilde| effective
+is tailored to be deleted in conversion to PDF strings.
+
+Moreover this behavior can be configured by options.
+
+\begin{itemize}
+\item |noCJKtildeasspace| (default)\Means
+  When |\CJKtilde| is effective, |~| will be deleted.
+  in conversion to PDF strings.
+\item |CJKtildeasspace|\Means
+  When |\CJKtilde| is effective, |~| will be converted
+  to a space character.
+  (This is the same behavior as when this package is not used.)
+\end{itemize}
+
+%-------------------
+\subsection{Other options}
+
+\begin{itemize}
+\item |everypage|\Means
+  Outputs the font mapping information on every page of the resulted
+  DVI document.
+  Available only with |dvipdfmx| driver.
+\item |noeverypage| (default)\Means
+  Negation of |everypage|.
+\item driver options\Means
+  |pdftex|, |dvipdfmx|, |dvips| and |none| are available.
+  The driver setting is relevant only when using font mappings other
+  than the default one (ipaex-type1 fonts), so one need not care of
+  drivers in using default fonts.
+  Moreover, non-default font mappings are supported only by |pdftex|
+  and |dvipdfmx|, and these two values are auto-detected
+  (|pdftex| is default in PDF mode and |dvipdfmx| in DVI mode).
+  Thus one will never need to specify the driver.
+\item |substmingoth|\Means
+  Applies the substituion of families |min|, |goth| and |maru|
+  (used conventionally for Japanese) with families |mc|, |gt| and |mg|
+  (standard in this package).
+\item |nosubstmingoth| (default)\Means
+  Negation of |substmingoth|.
+\item |boldbyembolden| (default)\Means
+  Changes the implementation of |\CJKbold| (pseudo-bold) from
+  ``overstriking'' to ``synthetic emboldening''.
+\item |noboldbyembolden|\Means
+  Negation of |boldbyembolden|.
+\item |CJKtildeasspace|\Means
+  When \Pkg{hyperref} is used, |~| in text will be converted
+  to a space character in generating PDF strings.
+  This is the same behavior as when this package is not used.
+\item |noCJKtildeasspace| (default)\Means
+  Negation of |CJKtildeasspace|, that is, |~| in text
+  will be deleted in PDF strings.
+\end{itemize}
+
+%===========================================================
+\section{Usage}
+\label{sec:usage}
+
+%-------------------
+\subsection{Selecting CJK fonts}
+
+The present package provides three ``generic'' CJK families in the same
+way as {\pLaTeX} plus the
+\href{http://www.ctan.org/pkg/japanese-otf}{\Pkg{japanese-otf} package}:
+Mincho family (|\mcfamily|), Gothic family (|\gtfamily|), and
+Maru-gothic family (|\mgfamily|).
+In default setting, the font set from the \Pkg{ipaex-type1} package
+are allocated;
+Mincho family uses IPAex Mincho font, and Gothic and Maru-gothic
+families use IPAex Gothic font.
+This allocation can be altered by users.
+
+\begin{itemize}
+\item |\mcfamily|\Means
+  Changes the CJK family to Mincho family.\\
+  Equivalent to |\CJKfamily{\mcdefault}|.
+\item |\gtfamily|\Means
+  Changes the CJK family to Gothic family.\\
+  Equivalent to |\CJKfamily{\gtdefault}|.
+\item |\mgfamily|\Means
+  Changes the CJK family to Maru-gothic family.\\
+  Equivalent to |\CJKfamily{\mgdefault}|.
+\end{itemize}
+
+More advanced commands:
+
+\begin{itemize}
+\item |\mcdefault|/|\gtdefault|/|\mgdefault|\Means
+  The names of CJK families corresponding to the three generic families.
+  In the standard allocation their values are
+  |mc|/\wbr|gt|/\wbr|mg| respectively
+  and the allocation is used as default.
+\item
+  |\setCJKfamilydefault{|\Meta{CJK-family}|}|\Means
+  Declares the default CJK family.
+  This default value is used when family names are missing in some
+  commands, such as |\CJKfamily{}| and
+  |\begin{CJK}{UTF8}{}|.
+  The (redefined) |\normalfont| also switches the CJK family to the
+  family specified by this command.
+
+  The default value of this default family is the ``counterpart'' of the
+  alphabetic font family which is in effect at the beginning of the
+  document body.
+  (See the next section.)
+\end{itemize}
+
+%-------------------
+\subsection{Synchronization of CJK and non-CJK families}
+
+The \Pkg{CJK} package (and {\pTeX} engine) manages separate
+``current families'' for CJK and alphabetic (non-CJK) families.
+While this treatment has its merit, synchronization of the two
+``current families'' is convenient in many cases.
+Accordingly, the present package redefines some of the {\LaTeX}
+commands that switches current alphabetic font families so that
+the CJK family will be switched to the counterpart of the current
+alphabetic family, where the ``counterpart'' is defined as follows:
+
+\begin{itemize}
+\item |\rmfamily| (Serif) → |\mcfamily| (Mincho)
+\item |\sffamily| (Sans-serif) → |\gtfamily| (Gothic)
+\item |\ttfamily| (Monospace) → |\gtfamily| (Gothic)
+\item The counterpart of the other families is |\mcfamily|.
+\end{itemize}
+
+Redefined commands:
+
+\begin{itemize}
+\item |\rmfamily|/|\sffamily|/|\ttfamily|\Means
+  Changes the CJK family to the counterpart of the alphabetic font
+  family after executing the original function.
+\item |\normalfont|\Means
+  Changes the CJK family to the default CJK family that is specified
+  by the |\setCJKfamilydefault| command.
+\end{itemize}
+
+There are shorthand forms of |CJK|/\wbr|CJK*| environments:
+
+\begin{itemize}
+\item |\begin{uCJK*}|\ldots|\end{uCJK*}|\Means
+  Equivalent to:
+\begin{verbatim}
+\begin{CJK*}{UTF8}{counterpart}...\end{CJK*}
+\end{verbatim}
+  where |counterpart| means the counterpart of the current alphabetic
+  font family.
+
+  Note that this is \emph{not} equivalent to
+\begin{verbatim}
+\begin{CJK*}{UTF8}{}...\end{CJK*}
+\end{verbatim}
+  structure, which uses the default CJK family.
+\item |\begin{uCJK}|\ldots|\end{uCJK}|\Means
+  Equivalent to:
+\begin{verbatim}
+\begin{CJK}{UTF8}{counterpart}...\end{CJK}
+\end{verbatim}
+\end{itemize}
+
+%-------------------
+\subsection{Font mapping}
+
+The usage of these commands are the same as in the \Pkg{pxchfon}
+package.
+Please refer to the manual of that package for detail.
+
+\begin{itemize}
+\item |\setminchofont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setgothicfont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setmarugothicfont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setmediumminchofont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setboldminchofont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setmediumgothicfont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setboldgothicfont{|\Meta{id}|]{|\Meta{font-file}|}|
+\item |\setxboldgothicfont{|\Meta{id}|]{|\Meta{font-file}|}|
+\end{itemize}
+
+However there is a major limitation as to the use of font mapping with
+the {\pdfTeX} engine.
+One can use only TrueType fonts and moreover TTC format is not allowed.
+(One can use any flavor of OpenType fonts when using dvipdfmx.)
+
+\Note The present package does not support the light-weight Mincho
+font, and thus the |\setlightminchofont| command does nothing useful.
+
+%-------------------
+\subsection{Other commands}
+
+\begin{itemize}
+\item |\UTF{|\Meta{hexadecimal-number}|}|\Means
+  Inputs a CJK character through Unicode codepoint value.
+  |\UTF{5B57}| is equivalent to |\Unicode{"5B}{"57}|.
+\item |\CJKforce{|\Meta{character}\ldots|}|\Means
+  Afterwards treats the characters given in the argument as CJK
+  characters (printed using CJK fonts).
+\item |\CJKunforce{|\Meta{character}\ldots|}|\Means
+  Cancels the effect of the |\CJKforce| command.
+\item |\@|\Meta{character}\Means
+  Treats the next character (only that occurrence) as a CJK character,
+  when the character is outside the ASCII range; othersize the
+  standard meaning of |\@| is retained.
+\item |\CJKecglue|\Means
+  Inserts a ``shibuaki'' space.
+  This will be invoked by |~| when |\CJKtilde| is in effect.
+  This command can be redefined by users to adjust the value of
+  shibuaki space, just as |\CJKglue| can be redefined to adjust
+  inter-ideographic space.
+
+  For example:
+\begin{verbatim}
+\renewcommand{\CJKecglue}{\hspace{0.125em minus 0.125em}}
+\end{verbatim}
+\end{itemize}
+
+%===========================================================
+\section{Remarks}
+\label{sec:remarks}
+
+\begin{itemize}
+\item The standard font families provided by this package does
+  \emph{not} support vertical writing, even when using default
+  ipaex-type1 font set.
+  However, the families provided by \Pkg{ipaex-type1}
+  (|ipxm| and |ipxg|) do support vertical writing, and one can
+  utilize these families directly by specifying |ipaex-type1| option.
+\end{itemize}
+
+%===========================================================
+\end{document}
