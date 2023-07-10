@@ -18,9 +18,7 @@
 \newcommand{\Means}{：\quad}
 \newcommand{\jemph}{\textsf}
 \newcommand{\wbr}{\linebreak[0]}
-\providecommand{\pTeX}{p\TeX}
-\providecommand{\pLaTeX}{p\LaTeX}
-\providecommand{\pdfTeX}{pdf\/\TeX}
+\newcommand{\Cs}[1]{\texttt{\symbol{`\\}#1}}
 %-----------------------------------------------------------
 \begin{document}
 \title{\Pkg{bxcjkvert} パッケージ}
@@ -36,99 +34,91 @@
 \tableofcontents
 
 %===========================================================
-\section{Package Loading}
+\section{パッケージ読込}
 \label{sec:loading}
 
 \begin{verbatim}
 \usepackage[<option>,...]{bxcjkvert}
 \end{verbatim}
 
-The \Pkg{CJKvert} package will be automatically loaded,
-if not yet loaded.
+本パッケージは\Pkg{CJKvert}パッケージを内部で読み込む。
 
-The available options are described hereafter.
+利用可能なオプションを以下で挙げる。
 
 %-------------------
-\subsection{Options for configuring font reset}
+\subsection{フォントリセットに関する設定}
 
-When a command for switching direction (|\CJKhorz| or |\CJKvert|)
-is invoked, \Pkg{CJKvert} resets the current font parameter
-by issuing |\normalfont|.
-This feature is inconvenient, particularly
-when authors mix different writing directions.
-Thus \Pkg{bxcjkvert} suppresses the feature by default,
-but it can be configured by the |resetfont| option.
+\Pkg{CJKvert}パッケージは、書字方向変更の命令
+（|\CJKhorz| および |\CJKvert|）の呼出の際に、
+|\normalfont| を実行して現在フォントをリセットする。
+この挙動は異なる書字方向を混在させる場合には特に不便である。
+従って、\Pkg{bxcjkvert}は既定ではこの挙動を抑止している。
+ただし |resetfont| オプションによりこの挙動は調整可能である。
 
 \begin{itemize}
 \item |resetfont=true|\Means
-  Makes direction comamnds reset the current font by issuing
-  the |\normalfont| command.
-  This is the default in \Pkg{CJKvert}.
-\item |resetfont=false| (default)\Means
-  Makes direction comamnds retain the current font.
+  書字方向命令が現在フォントをリセット（|\normalfont|）する。
+  \Pkg{CJKvert}ではこれが既定である。
+\item |resetfont=false|（既定）\Means
+  書字方向命令が現在フォントを変更しない。
 \end{itemize}
 
 %-------------------
-\subsection{Options for configuring adjustment of the baseline-stretch}
+\subsection{ベースライン伸長の補正に関する設定}
 
-\Pkg{CJKvert} makes some adjustment to the value of |\baselinestretch|
-when the writing direction is changed.
-Namely it makes the baseline-stretch enlarged by the factor of
-|\CJKbaselinestretch|%
-\footnote{The value of \Cs{CJKbaselinestretch} is $1.3$ by default.}
-when |\CJKvert| is used.
-
-However as far as Japanese typesetting is concerned,
-there is no need to tweak the baseline-stretch value.
-Thus \Pkg{bxcjkvert} suppresses this feature, but again
-it can be configured by the |usebaselinestretch| option.
+\Pkg{CJKvert}は書字方向変更時に |\baselinestretch| の値に対する
+補正を行う。
+具体的には、|\CJKvert| が有効な間は
+ベースライン伸長値が |\CJKbaselinestretch| 倍
+\footnote{\Cs{CJKbaselinestretch}の既定値は$1.3$である。}
+に増大する。
+ところが、日本語組版に関する限り、ベースライン伸長値を
+変えるべき理由はどこにもない。
+従って、\Pkg{bxcjkvert}はこの機能を無効化している。
+ただし |usebaselinestretch| オプションによりこの挙動は
+調整可能である。
 
 
 \begin{itemize}
 \item |usebaselinestretch=true|\Means
-  This is the same as the behavior of \Pkg{CJKvert} \emph{with}
-  the |usebaselinestretch| option.
-  When |\CJKvert| is invoked, the baseline-stretch will be multiplied
-  by the value of |\CJKbaselinestretch|.
-  When |\CJKhorz| is invoked, the baseline-stretch will be reverted.%
-  \footnote{Note that, however, in this case the baseline-stretch will
-    be reverted to the value at the time when \Pkg{CJKvert} was loaded.
-    it might be against authors' expectation.}
+  |usebaselinestretch| オプション付きの\Pkg{CJKvert}パッケージと同じ。
+  すなわち、|\CJKvert| 実行時にはベースライン伸長値
+  を |\CJKbaselinestretch| 倍にし、|\CJKhorz| 実行時には
+  ベースライン伸長値を復元する。%
+  \footnote{ただし、この場合、ベースライン伸長値は
+  「\Pkg{CJKvert}パッケージ読込時に保持されていた値」に戻される
+  ことに注意。}
 \item |usebaselinestretch=false|\Means
-  This is the same as the behavior of \Pkg{CJKvert} \emph{without}
-  the |usebaselinestretch| option.
-  When |\CJKvert| is invoked, the baseline-stretch will be set
-  to the value of |\CJKbaselinestretch|.
-  When |\CJKhorz| is invoked, the baseline-stretch will be
-  reset to $1$.
-  This option ignores the user's setting to the baseline-stretch.
-\item |usebaselinestretch=retain| (default)\Means
-  Makes direction comamnds leave the baseline-stretch
-  unchanged.
+  |usebaselinestretch| オプション無しの\Pkg{CJKvert}パッケージと同じ。
+  すなわち、|\CJKvert| 実行時にはベースライン伸長値
+  を |\CJKbaselinestretch| の値に設定し、|\CJKhorz| 実行時には
+  ベースライン伸長値を$1$に設定する。
+  （ユーザによるベースライン伸長値の設定は無視される。）
+\item |usebaselinestretch=retain|（既定）\Means
+  ベースライン伸長値に対する変更を一切行わない。
 \end{itemize}
 
-\Note If \Pkg{CJKvert} is loaded with the |usebaselinestretch|
-option in advance,
-then the value of |usebaselinestretch| of this package
-will be default to |true| instead of |retain|.
+\Note \Pkg{CJKvert}が予め |usebaselinestretch| オプション付きで
+読み込まれていた場合は、本パッケージの |usebaselinestretch| の
+既定値は（|retain| ではなく）|true| になる。
 
 %-------------------
-\subsection{Options for configuring initial writing direction}
+\subsection{書字方向の初期値に関する設定}
 
-\Pkg{CJKvert} sets the initial writing direction of the document
-to vertical.
-But \Pkg{bxcjkvert} allows authors to choose the initial direction.
+\Pkg{CJKvert}では初期（文書開始時）の書字方向は縦組と
+定められている。
+本パッケージでは初期の書字方向をユーザが選択することができる。
 
 \begin{itemize}
 \item |main=true|\Means
-  Sets the initial direction to vertical.
-  This is the default in \Pkg{CJKvert}.
+  書字方向の初期値を縦組とする。
+  \Pkg{CJKvert}ではこれが既定である。
 \item |main=false|\Means
-  Sets the initial direction to horizontal.
+  書字方向の初期値を横組とする。
 \item |main=retain| (default)\Means
-  Does not specify the initial direction.
-  In this case, authors can use |\CJKvert| or |\CJKhorz|
-  in the preamble to decide the initial direction.
+  書字方向の初期値を何も指定しない。
+  この場合、プレアンブルで |\CJKvert| や |\CJKhorz| を実行することで
+  書字方向の初期値を決めることができる。
 \end{itemize}
 
 %===========================================================
