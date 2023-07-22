@@ -1,7 +1,7 @@
 %%
 %% This is file 'bxcjkjatype.sty'.
 %% 
-%% Copyright (c) 2016 Takayuki YATO (aka. "ZR")
+%% Copyright (c) 2013-2023 Takayuki YATO (aka. "ZR")
 %%   GitHub:   https://github.com/zr-tex8r
 %%   Twitter:  @zr_tex8r
 %%
@@ -10,13 +10,9 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxcjkjatype}[2016/11/11 v0.4]
+\ProvidesPackage{bxcjkjatype}[2023/07/31 v0.5-pre]
 \def\bxjy@pkgname{bxcjkjatype}
-
-%% definitions
 \def\bxjy@error{\PackageError\bxjy@pkgname}
-\def\bxjy@warn{\PackageWarning\bxjy@pkgname}
-\def\bxjy@info{\PackageInfo\bxjy@pkgname}
 
 %--------------------------------------- helpers
 
@@ -143,10 +139,13 @@
 
 %% Check the driver specified
 \def\bxjy@tmpa#1#2{%
-  \bxjy@info{Driver auto-detected: #2}%
+  \PackageInfo\bxjy@pkgname
+   {Driver auto-detected: #2}%
   \let\bxjy@driver#1}
 \def\bxjy@tmpb#1#2{%
-  \bxjy@error{Wrong driver specified, changed to: #2}\@ehc%
+  \PackageError\bxjy@pkgname
+   {Wrong driver specified, changed to: #2}%
+   {\@ehc}%
   \let\bxjy@driver#1}
 \ifnum\ifdefined\pdfoutput\pdfoutput\else\z@\fi>\z@
   \unless\ifdefined\bxjy@driver
@@ -167,11 +166,11 @@
   \bxjy@error{Preset options cannot go with 'ipaex-type1'}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
-\ifx \bxjy@driver\bxjy@none \unless\ifx\bxjy@main@preset\relax
+\ifx\bxjy@driver\bxjy@none \unless\ifx\bxjy@main@preset\relax
   \bxjy@error{Preset options require a valid driver}\@ehc
   \let\bxjy@main@preset\relax
 \fi\fi
-\ifx \bxjy@driver\bxjy@none
+\ifx\bxjy@driver\bxjy@none
   \bxjy@boldbyemboldenfalse
 \fi
 
@@ -207,7 +206,6 @@
 \ifbxjy@everypage\ifx\bxjy@driver\bxjy@dvipdfmx
   \RequirePackage{atbegshi}
 \fi\fi
-%%
 
 %%<+> \FirstCJKUse
 %%<+> \EveryCJKUse
@@ -266,7 +264,6 @@
 }
 
 %%<*> \setCJKfamilydefault{<fam>}
-%\newif\ifbxjy@default@set
 \newrobustcmd*\setCJKfamilydefault[1]{%
   \bxjy@default@settrue
   \CJKencfamily{UTF8}{#1}}
@@ -377,8 +374,8 @@
 }
 \def\bxjy@cjk@force#1{%
   \expandafter\bxjy@cjkforce@do
-   \csname u8:#1\expandafter\endcsname
-   \csname bxjy@U/#1\endcsname{#1}%
+      \csname u8:#1\expandafter\endcsname
+      \csname bxjy@U/#1\endcsname{#1}%
 }
 
 %%<*> \CJKforced{<kanji>}
@@ -405,12 +402,12 @@
   \bxjy@cond\ifcat\noexpand\bxjy@tok\@sptoken\fi{\bxjy@org@at}{%
   \bxjy@cond\ifcat\noexpand\bxjy@tok\bgroup\fi{\CJKforced}{%
   \bxjy@cond\ifcat\noexpand\bxjy@tok\relax\fi{\bxjy@at@c}{%
-     \bxjy@org@at
+    \bxjy@org@at
   }}}}%
 }
 \def\bxjy@at@c#1{%
   \bxjy@cond\ifcat\noexpand#1\noexpand~\fi{\CJKforced}{%
-     \bxjy@org@at
+    \bxjy@org@at
   }#1%
 }
 
@@ -459,7 +456,7 @@
       \fi
     \fi
     \ifx\bxjy@ttfname@ptn\relax
-      \@latex@warning@no@line
+      \PackageWarningNoLine\bxjy@pkgname
        {Option 'ttfname' has an invalid value:\MessageBreak
         "\bxjy@ttfname"}%
     \fi
@@ -487,9 +484,10 @@
   \ifdefined\pdfmatch
     \bxjy@set@ttfname@ptn
   \else
-    \bxjy@error
+    \PackageError\bxjy@pkgname
      {Option 'ttfname' cannot be used because your\MessageBreak
-      pdfTeX engine is too old}\@ehc
+      pdfTeX engine is too old}%
+     {\@ehc}%
   \fi
 \fi
 
@@ -612,7 +610,7 @@
 \letcs\bxjy@normalafont{normalfont }
 
 %% Add patches to \rmfamily, etc.
-\csappto{rmfamily }{%
+\csappto{rmfamily }{% FIXME
   \CJKfamily{\mcdefault}}
 \csappto{sffamily }{%
   \CJKfamily{\gtdefault}}
