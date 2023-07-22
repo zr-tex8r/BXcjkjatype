@@ -7,14 +7,16 @@
 \usepackage{xcolor}
 \usepackage[unicode,colorlinks]{hyperref}
 \hypersetup{linkcolor=blue!75!black,urlcolor=green!45!black}
+\usepackage{bxtexlogo}
+\bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
 \usepackage{verbatim}
 \newenvironment{myverbatim}
   {\begin{quote}\small\verbatim}
   {\endverbatim\end{quote}}
-\newcommand{\PkgVersion}{0.4}
-\newcommand{\PkgDate}{2016/11/11}
+\newcommand{\PkgVersion}{0.5}
+\newcommand{\PkgDate}{2023/07/23}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\textit{#1}$\rangle$}
 \newcommand{\Note}{\par\noindent \emph{Note:}\quad}
@@ -29,7 +31,7 @@
 \maketitle
 
 \begin{abstract}
-Thia package is a tailored version of the \Pkg{CJKvert} package,
+This package is a tailored version of the \Pkg{CJKvert} package,
 accommodated for Japanese typesetting,
 where mixture of horizontal and vertical writings is common.
 \end{abstract}
@@ -64,23 +66,23 @@ but it can be configured by the |resetfont| option.
 \item |resetfont=true|\Means
   Makes direction comamnds reset the current font by issuing
   the |\normalfont| command.
-  This is the default in \Pkg{CJKvert}.
+  \Note This is the original behavior of \Pkg{CJKvert}.
 \item |resetfont=false| (default)\Means
   Makes direction comamnds retain the current font.
 \end{itemize}
 
 %-------------------
-\subsection{Options for configuring adjustment of the baseline-stretch}
+\subsection{Options for configuring adjustment of the baseline stretch}
 
 \Pkg{CJKvert} makes some adjustment to the value of |\baselinestretch|
 when the writing direction is changed.
-Namely it makes the baseline-stretch enlarged by the factor of
+Namely it makes the baseline stretch enlarged by the factor of
 |\CJKbaselinestretch|%
 \footnote{The value of \Cs{CJKbaselinestretch} is $1.3$ by default.}
 when |\CJKvert| is used.
 
 However as far as Japanese typesetting is concerned,
-there is no need to tweak the baseline-stretch value.
+there is no need to tweak the baseline stretch value.
 Thus \Pkg{bxcjkvert} suppresses this feature, but again
 it can be configured by the |usebaselinestretch| option.
 
@@ -89,29 +91,29 @@ it can be configured by the |usebaselinestretch| option.
 \item |usebaselinestretch=true|\Means
   This is the same as the behavior of \Pkg{CJKvert} \emph{with}
   the |usebaselinestretch| option.
-  When |\CJKvert| is invoked, the baseline-stretch will be multiplied
+  When |\CJKvert| is invoked, the baseline stretch will be multiplied
   by the value of |\CJKbaselinestretch|.
-  When |\CJKhorz| is invoked, the baseline-stretch will be reverted.%
-  \footnote{Note that, however, in this case the baseline-stretch will
+  When |\CJKhorz| is invoked, the baseline stretch will be reverted.%
+  \footnote{Note that, however, in this case the baseline stretch will
     be reverted to the value at the time when \Pkg{CJKvert} was loaded.
     it might be against authors' expectation.}
 \item |usebaselinestretch=false|\Means
   This is the same as the behavior of \Pkg{CJKvert} \emph{without}
   the |usebaselinestretch| option.
-  When |\CJKvert| is invoked, the baseline-stretch will be set
+  When |\CJKvert| is invoked, the baseline stretch will be set
   to the value of |\CJKbaselinestretch|.
-  When |\CJKhorz| is invoked, the baseline-stretch will be
+  When |\CJKhorz| is invoked, the baseline stretch will be
   reset to $1$.
-  This option ignores the user's setting to the baseline-stretch.
+  This option ignores the user's setting to the baseline stretch.
 \item |usebaselinestretch=retain| (default)\Means
-  Makes direction comamnds leave the baseline-stretch
+  Makes direction comamnds leave the baseline stretch
   unchanged.
 \end{itemize}
 
 \Note If \Pkg{CJKvert} is loaded with the |usebaselinestretch|
 option in advance,
 then the value of |usebaselinestretch| of this package
-will be default to |true| instead of |retain|.
+will default to |true| instead of |retain|.
 
 %-------------------
 \subsection{Options for configuring initial writing direction}
@@ -123,7 +125,7 @@ But \Pkg{bxcjkvert} allows authors to choose the initial direction.
 \begin{itemize}
 \item |main=true|\Means
   Sets the initial direction to vertical.
-  This is the default in \Pkg{CJKvert}.
+  \Note This is the original behavior of \Pkg{CJKvert}.
 \item |main=false|\Means
   Sets the initial direction to horizontal.
 \item |main=retain| (default)\Means

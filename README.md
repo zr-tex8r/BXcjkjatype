@@ -56,6 +56,9 @@ Please refer to the user manual for detail.
 Revision History
 ----------------
 
+  * Version 0.5  ‹2023/07/23›
+      - Adjustment for the recent LaTeX kernel.
+
   * Version 0.4  ‹2016/11/11›
       - Added bxcjkvert package.
       - Added `CJKtildeasspace` option.

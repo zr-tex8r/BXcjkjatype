@@ -13,8 +13,9 @@
 \newenvironment{myverbatim}
   {\begin{quote}\small\verbatim}
   {\endverbatim\end{quote}}
-\newcommand{\PkgVersion}{0.4}
-\newcommand{\PkgDate}{2016/11/11}
+\newcommand*{\Cs}[1]{\texttt{\textbackslash #1}}
+\newcommand{\PkgVersion}{0.5}
+\newcommand{\PkgDate}{2023/07/23}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\textit{#1}$\rangle$}
 \newcommand{\Note}{\par\noindent \emph{Note:}\quad}
@@ -51,20 +52,23 @@ users, by providing commands that are similar to those used by the
 The available options are described hereafter.
 
 %-------------------
-\subsection{Options for auto-wrapping}
+\subsection{Options for auto-wrapping by CJK environments}
 
-These options enable one to wrap the document body with a |CJK(*)|
+These options wrap the document body with a |CJK(*)|
 environment automatically and safely.
-They are suitable when a document contains much amount of CJK text,
+They are suitable
+when CJK needs to be effective in the whole document,
 or some ``moving arguments'' hold CJK text.
 
 \begin{itemize}
 \item |whole|, |wholeCJK*|\Means
-  Wraps the whole document body with a |CJK*| environment
-  (precisely speaking, with |\begin{uCJK*}|\ldots\wbr|\end{uCJK*}|).
+  Wraps the whole document body with a |CJK*| environment.
+  \Note Precisely speaking,
+  it wraps with |\begin{uCJK*}|\ldots\wbr|\end{uCJK*}|.
 \item |wholeCJK|\Means
-  Wraps the whole document body with a |CJK| environment
-  (precisely speaking, with |\begin{uCJK}|\ldots\wbr|\end{uCJK}|).
+  Wraps the whole document body with a |CJK| environment.
+  \Note Precisely speaking,
+  it wraps with |\begin{uCJK}|\ldots\wbr|\end{uCJK}|.
 \item |nowhole| (default)\Means
   Negation of |wholeCJK*| or |wholeCJK|.
 \end{itemize}
@@ -72,13 +76,22 @@ or some ``moving arguments'' hold CJK text.
 %-------------------
 \subsection{Options for ``auto-tilde''}
 
+The \Pkg{CJK} package does not support auto-insertion of ``shibuaki''
+(a thin space between alphabetic and ideographic letters)
+and thus authors must manually insert ``shibuaki''.
+To help them \Pkg{CJK} package provides a mechanism
+to switch the meaning of the tilde character ``|~|''
+between a non-breaking space (the original meaning)
+and ``shibuaki''.
+The |\autotilde| command changes ``|~|'' to ``shibuaki''%
+\footnote{\Cs{standardtilde} cancels the effect of \Cs{CJKtilde}
+  and changes ``\texttt{\textasciitilde}'' back to non-breaking space.
+  \Cs{nbs} always inserts non-breaking space,
+  which is useful in CJK environemtns.}.
+
 The option |autotilde| triggers automatic invocation of |\CJKtilde|,
-which makes a tilde character (|~|) insert ``shibuaki'' (a thin space
-between alphabetic and ideographic letters) rather than a no-break space
-(standard).
-No-break spaces can still be inserted by the command |\nbs|, and
-|\standardtilde| cancels the effect of |\CJKtilde|.
-(The commands mentioned here belong to \Pkg{CJK} package.)
+which makes ``|~|'' in CJK environments insert ``shibuaki''
+by default.
 
 \begin{itemize}
 \item |autotilde|\Means
@@ -89,9 +102,37 @@ No-break spaces can still be inserted by the command |\nbs|, and
 \end{itemize}
 
 %-------------------
+\subsection{Options for configuring ``shibuaki'' in PDF strings}
+
+As explained above,
+in {\LaTeX} grammar ``|~|'' represents a non-breaking space.
+Accordingly, when the \Pkg{hyperref} package generates PDF strings,
+``|~|'' in {\LaTeX} text will be converted to a space character.
+
+However, when |\CJKtilde| is effective
+the meaning of ``|~|'' changes to ``shibuaki''.
+The ``shibuaki'' is device on typesetting
+and is not a space as text data,
+and thus the behavior of \Pkg{hyperref} is undesirable.
+When this package is loaded, ``|~|'' with |\CJKtilde| effective
+is tailored to be deleted at conversion to PDF strings.
+
+Moreover this behavior can be configured by options.
+
+\begin{itemize}
+\item |noCJKtildeasspace| (default)\Means
+  When |\CJKtilde| is effective,
+  ``|~|'' will be deleted in PDF strings.
+\item |CJKtildeasspace|\Means
+  When |\CJKtilde| is effective,
+  ``|~|'' will be converted to a space character in PDF strings.
+  \Note This is the original behavior of \Pkg{hyperref}.
+\end{itemize}
+
+%-------------------
 \subsection{Options for font-mapping}
 
-One can use preset font mappings in the same way as in the
+You can use preset font mappings in the same way as in the
 \href{http://www.ctan.org/pkg/pxchfon}{\Pkg{pxchfon} package}.
 Please refer to the manual of that package for detailed explanation
 of this feature.
@@ -99,17 +140,16 @@ of this feature.
 \begin{itemize}
 \item |oneweight|, |nooneweight|\Means
   The same as in \Pkg{pxchfon}.
-\item One can use font preset options (such as |ms|) which are available
+\item You can use font preset options (such as |ms|) which are available
   in \Pkg{pxchfon} (except obsolete ones).
 \item |ttfname=|\Meta{pattern}\Means
   Specifies the pattern of the TTF font names which are used when TTC
-  substitution is employed.
-  For example, when the option |ttfname=*_1| is given, the font
-  ``index 0 of mogam.ttc'' will map to ``mogam\_1.ttf'', and similarly,
-  ``index 1'' to ``mogam\_2.ttf'' and so on.
+  substitution (Section~\ref{ssec:ttfname}) is employed.
+
 \item |ipaex-type1|\Means
   Disables the font management of this package and directly uses the
-  families provided by the ipaex-type1 package, namely |ipxm| and |ipxg|.
+  families provided by the \Pkg{ipaex-type1} package,
+  namely |ipxm| and |ipxg|.
   In this setting the value of |\mcdefault| is |ipxm| and the value of
   |\gtdefault| and |\mgdefault| is |ipxg|, so that the higher level
   commands (such as |\sffamily| and |\gtfamily|) can work correctly.
@@ -123,33 +163,9 @@ of this feature.
   Sets the scaling factor for CJK fonts.
 \end{itemize}
 
-(When using version 0.3 or later, one can employ the scaling even with the
-|ipaex-type1| option.)
-
-%-------------------
-\subsection{Options for configuring ``Shibuaki'' in PDF strings}
-
-In {\LaTeX} grammar |~| represents a non-breaking space.
-Accordingly, when the \Pkg{hyperref} package generates PDF strings,
-|~| in {\LaTeX} text will be converted to a space character.
-
-However, when |\CJKtilde| of the \Pkg{CJK} package is effective
-the meaning of |~| changes to ``shibuaki''.
-The shibuaki is device on typesetting and is not a space as text data.
-Thus when this package is loaded, |~| with |\CJKtilde| effective
-is tailored to be deleted in conversion to PDF strings.
-
-Moreover this behavior can be configured by options.
-
-\begin{itemize}
-\item |noCJKtildeasspace| (default)\Means
-  When |\CJKtilde| is effective, |~| will be deleted.
-  in conversion to PDF strings.
-\item |CJKtildeasspace|\Means
-  When |\CJKtilde| is effective, |~| will be converted
-  to a space character.
-  (This is the same behavior as when this package is not used.)
-\end{itemize}
+\Note When using version 0.3 or later,
+one can employ the scaling even with the
+|ipaex-type1| option.
 
 %-------------------
 \subsection{Other options}
@@ -161,15 +177,15 @@ Moreover this behavior can be configured by options.
   Available only with |dvipdfmx| driver.
 \item |noeverypage| (default)\Means
   Negation of |everypage|.
-\item driver options\Means
+\item Driver options\Means
   |pdftex|, |dvipdfmx|, |dvips| and |none| are available.
   The driver setting is relevant only when using font mappings other
-  than the default one (ipaex-type1 fonts), so one need not care of
+  than the default one (ipaex-type1 fonts), so you need not care of
   drivers in using default fonts.
   Moreover, non-default font mappings are supported only by |pdftex|
   and |dvipdfmx|, and these two values are auto-detected
   (|pdftex| is default in PDF mode and |dvipdfmx| in DVI mode).
-  Thus one will never need to specify the driver.
+  Thus you will never need to specify the driver.
 \item |substmingoth|\Means
   Applies the substituion of families |min|, |goth| and |maru|
   (used conventionally for Japanese) with families |mc|, |gt| and |mg|
@@ -181,14 +197,35 @@ Moreover this behavior can be configured by options.
   ``overstriking'' to ``synthetic emboldening''.
 \item |noboldbyembolden|\Means
   Negation of |boldbyembolden|.
-\item |CJKtildeasspace|\Means
-  When \Pkg{hyperref} is used, |~| in text will be converted
-  to a space character in generating PDF strings.
-  This is the same behavior as when this package is not used.
-\item |noCJKtildeasspace| (default)\Means
-  Negation of |CJKtildeasspace|, that is, |~| in text
-  will be deleted in PDF strings.
 \end{itemize}
+
+%-------------------
+\subsection{TTC substitution}
+\label{ssec:ttfname}
+
+The {\pdfTeX} engine does not support fonts in TTC format.
+Thus when you want to use TTC fonts for this package,
+all you can do is to decompose a TTC font
+into several TTF fonts.
+
+Moreover there is another problem when you use this package.
+The decomposed TTF files have names
+different from the original TTC font,
+which means that
+the preset settings (options such as |moba-moga|) no longer work.
+The |ttfname| option is a workaround for this problem.
+
+The |ttfname| option key must have a file name pattern,
+which is a string containing (exactly) one occurrence of ``|*|''
+and one occurrence of a numeral string,
+such as ``|*_1|'' and ``|TEMP-*-00.TTF|''.
+(If the pattern does not have an extension, ``|.ttf|'' is appended.)
+
+For example, when the option |ttfname=*_1| is given, the font
+``index 0 of mogam.ttc'' will map to ``mogam\_1.ttf'', and similarly,
+``index 1'' to ``mogam\_2.ttf''
+(the numeral part is incremented) and so on.
+
 
 %===========================================================
 \section{Usage}
@@ -197,27 +234,27 @@ Moreover this behavior can be configured by options.
 %-------------------
 \subsection{Selecting CJK fonts}
 
-The present package provides three ``generic'' CJK families in the same
-way as {\pLaTeX} plus the
+The present package provides three ``generic'' CJK font familie 
+in the same way as {\pLaTeX} plus the
 \href{http://www.ctan.org/pkg/japanese-otf}{\Pkg{japanese-otf} package}:
 Mincho family (|\mcfamily|), Gothic family (|\gtfamily|), and
 Maru-gothic family (|\mgfamily|).
 In default setting, the font set from the \Pkg{ipaex-type1} package
-are allocated;
+is allocated;
 Mincho family uses IPAex Mincho font, and Gothic and Maru-gothic
 families use IPAex Gothic font.
 This allocation can be altered by users.
 
 \begin{itemize}
 \item |\mcfamily|\Means
-  Changes the CJK family to Mincho family.\\
-  Equivalent to |\CJKfamily{\mcdefault}|.
+  Changes the CJK family to Mincho family.
+  \Note Equivalent to |\CJKfamily{\mcdefault}|.
 \item |\gtfamily|\Means
-  Changes the CJK family to Gothic family.\\
-  Equivalent to |\CJKfamily{\gtdefault}|.
+  Changes the CJK family to Gothic family.
+  \Note Equivalent to |\CJKfamily{\gtdefault}|.
 \item |\mgfamily|\Means
-  Changes the CJK family to Maru-gothic family.\\
-  Equivalent to |\CJKfamily{\mgdefault}|.
+  Changes the CJK family to Maru-gothic family.
+  \Note Equivalent to |\CJKfamily{\mgdefault}|.
 \end{itemize}
 
 More advanced commands:
@@ -237,14 +274,15 @@ More advanced commands:
   The (redefined) |\normalfont| also switches the CJK family to the
   family specified by this command.
 
-  The default value of this default family is the ``counterpart'' of the
+  The default value of this default family is
+  the ``counterpart'' (Section~\ref{ssec:sync-families}) of the
   alphabetic font family which is in effect at the beginning of the
   document body.
-  (See the next section.)
 \end{itemize}
 
 %-------------------
 \subsection{Synchronization of CJK and non-CJK families}
+\label{ssec:sync-families}
 
 The \Pkg{CJK} package (and {\pTeX} engine) manages separate
 ``current families'' for CJK and alphabetic (non-CJK) families.
@@ -279,9 +317,9 @@ There are shorthand forms of |CJK|/\wbr|CJK*| environments:
 \item |\begin{uCJK*}|\ldots|\end{uCJK*}|\Means
   Equivalent to:
 \begin{verbatim}
-\begin{CJK*}{UTF8}{counterpart}...\end{CJK*}
+\begin{CJK*}{UTF8}{<counterpart>}...\end{CJK*}
 \end{verbatim}
-  where |counterpart| means the counterpart of the current alphabetic
+  where |<counterpart>| means the counterpart of the current alphabetic
   font family.
 
   Note that this is \emph{not} equivalent to
@@ -316,8 +354,8 @@ Please refer to the manual of that package for detail.
 
 However there is a major limitation as to the use of font mapping with
 the {\pdfTeX} engine.
-One can use only TrueType fonts and moreover TTC format is not allowed.
-(One can use any flavor of OpenType fonts when using dvipdfmx.)
+You can use only TrueType fonts and moreover TTC format is not allowed.
+(You can use any flavor of OpenType fonts when using dvipdfmx.)
 
 \Note The present package does not support the light-weight Mincho
 font, and thus the |\setlightminchofont| command does nothing useful.
@@ -345,7 +383,7 @@ font, and thus the |\setlightminchofont| command does nothing useful.
   shibuaki space, just as |\CJKglue| can be redefined to adjust
   inter-ideographic space.
 
-  For example:
+  For example, you can write:
 \begin{verbatim}
 \renewcommand{\CJKecglue}{\hspace{0.125em minus 0.125em}}
 \end{verbatim}
@@ -360,7 +398,7 @@ font, and thus the |\setlightminchofont| command does nothing useful.
   \emph{not} support vertical writing, even when using default
   ipaex-type1 font set.
   However, the families provided by \Pkg{ipaex-type1}
-  (|ipxm| and |ipxg|) do support vertical writing, and one can
+  (|ipxm| and |ipxg|) do support vertical writing, and you can
   utilize these families directly by specifying |ipaex-type1| option.
 \end{itemize}
 
