@@ -14,6 +14,29 @@
 \def\bxjy@pkgname{bxcjkjatype}
 \def\bxjy@error{\PackageError\bxjy@pkgname}
 
+%--------------------------------------- environment check
+
+%% \bxjy@ifprimitive\CS{<true>}{<false>}
+\@onlypreamble\bxjy@ifprimitive
+\def\bxjy@ifprimitive#1{%
+  \edef\bxjy@tmpa{\string#1}\edef\bxjy@tmpb{\meaning#1}%
+  \ifx\bxjy@tmpa\bxjy@tmpb\expandafter\@firstoftwo
+  \else\expandafter\@secondoftwo\fi
+}
+
+%% engine check
+\@tempswatrue
+\bxjy@ifprimitive\eTeXversion{}{\@tempswafalse}
+\bxjy@ifprimitive\kanjiskip{\@tempswafalse}{}
+\bxjy@ifprimitive\luatexversion{\@tempswafalse}{}
+\bxjy@ifprimitive\XeTeXversion{\@tempswafalse}{}
+\if@tempswa\else
+  \PackageError\bxjy@pkgname
+   {The engine in use is not supported}%
+   {Only pdfTeX engine is supported.\MessageBreak
+    Package loading is aborted.}
+\expandafter\endinput\fi\relax
+
 %--------------------------------------- helpers
 
 %% switches
@@ -25,33 +48,10 @@
 \def\bxjy@mark{\bxjy@mark@}
 \def\bxjy@end{\bxjy@end@}
 
-%% \bxjy@ifprimitive\CS{<true>}{<false>}
-\@onlypreamble\bxjy@ifprimitive
-\def\bxjy@ifprimitive#1{%
-  \edef\bxjy@tmpa{\string#1}%
-  \edef\bxjy@tmpb{\meaning#1}%
-  \ifx\bxjy@tmpa\bxjy@tmpb \expandafter\@firstoftwo
-  \else \expandafter\@secondoftwo \fi
-}
-
 %% \bxjy@cond\ifXX...\fi{<true>}{<false>}
 \@gobbletwo\if\if \def\bxjy@cond#1\fi{%
   #1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
 }
-
-%--------------------------------------- environment check
-
-%% engine check
-\bxjy@oktrue
-\bxjy@ifprimitive\kanjiskip{\bxjy@okfalse}{}
-\bxjy@ifprimitive\luatexversion{\bxjy@okfalse}{}
-\bxjy@ifprimitive\XeTeXversion{\bxjy@okfalse}{}
-\bxjy@ifprimitive\eTeXversion{}{\bxjy@okfalse}
-\ifbxjy@ok\else
-  \bxjy@error{The engine in use is not supported}%
-    {Only pdfTeX engine is supported.\MessageBreak
-    Package loading is aborted.}
-\expandafter\endinput\fi\relax
 
 %--------------------------------------- option handling
 
