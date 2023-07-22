@@ -1,0 +1,527 @@
+%%
+%% This is file 'bxcjkjatype-lite.sty'.
+%% 
+%% Copyright (c) 2013-2023 Takayuki YATO (aka. "ZR")
+%%   GitHub:   https://github.com/zr-tex8r
+%%   Twitter:  @zr_tex8r
+%%
+%% This package is distributed under the MIT License.
+%%
+
+%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bxcjkjatype-lite}[2023/07/31 v0.5-pre]
+\def\bxjy@pkgname{bxcjkjatype-lite}
+\def\bxjy@error{\PackageError\bxjy@pkgname}
+
+%--------------------------------------- environment check
+
+%% \bxjy@ifprimitive\CS{<true>}{<false>}
+\@onlypreamble\bxjy@ifprimitive
+\def\bxjy@ifprimitive#1{%
+  \edef\bxjy@tmpa{\string#1}\edef\bxjy@tmpb{\meaning#1}%
+  \ifx\bxjy@tmpa\bxjy@tmpb\expandafter\@firstoftwo
+  \else\expandafter\@secondoftwo\fi
+}
+
+%% engine check
+\@tempswatrue
+\bxjy@ifprimitive\kanjiskip{\@tempswafalse}{}
+\bxjy@ifprimitive\luatexversion{\@tempswafalse}{}
+\bxjy@ifprimitive\XeTeXversion{\@tempswafalse}{}
+\if@tempswa\else
+  \PackageError\bxjy@pkgname
+   {The engine in use is not supported}%
+   {Only pdfTeX engine is supported.\MessageBreak
+    Package loading is aborted.}
+\expandafter\endinput\fi\relax
+
+%--------------------------------------- helpers
+
+%% switches
+\newif\ifbxjy@ok
+\newif\ifbxjy@default@set
+\newif\ifbxjy@byembolden
+
+%% unique tokens
+\def\bxjy@mark{\bxjy@mark@}
+\def\bxjy@end{\bxjy@end@}
+
+%% \bxjy@cond\ifXX...\fi{<true>}{<false>}
+\@gobbletwo\if\if \def\bxjy@cond#1\fi{%
+  #1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+}
+
+%--------------------------------------- something for Lite
+
+%% variables
+\let\bxjy@l@warn=t
+
+%% macros
+\@onlypreamble\bxjy@l@err@badopt
+\def\bxjy@l@err@badopt#1{%
+  \PackageError\bxjy@pkgname
+   {This package is a lite version, and\MessageBreak
+    it does not support #1}%
+   {\@ehc}}
+\@onlypreamble\bxjy@l@BO
+\def\bxjy@l@BO#1{\bxjy@l@err@badopt{option '#1'}}
+\let\bxjy@l@warn@na\@gobble
+\AtEndOfPackage{%
+  \ifx t\bxjy@l@warn
+    \PackageWarningNoLine\bxjy@pkgname
+     {Lite version of 'bxcjkjatype' is used}
+    \def\bxjy@l@warn@na#1{%
+      \PackageWarning\bxjy@pkgname
+       {Unsupported command '\string#1'}}%
+  \fi}
+
+%% etoolbox compat
+\def\bxjy@l@letcs#1#2{%
+  \expandafter\let\expandafter#1\csname#2\endcsname}
+\def\bxjy@l@cslet#1#2{%
+  \expandafter\let\csname#1\endcsname#2}
+\def\bxjy@l@csappto#1{%
+  \expandafter\g@addto@macro\csname#1\endcsname}
+
+%--------------------------------------- something Allez
+\chardef\bxjy@tmpb\catcode`\^^\ \catcode`\^^\=0
+\@onlypreamble\bxjy@load@CJKpunct \def\bxjy@load@CJKpunct#1#2{%
+  \begingroup
+    \toks@{}\@tempswatrue\endlinechar\m@ne
+    \openin\@inputcheck=#1\relax
+    \@whilesw\if@tempswa\fi{%
+      \ifeof\@inputcheck \@tempswafalse
+      \else \read\@inputcheck to\bxjy@line
+        \toks@\expandafter\expandafter\expandafter{%
+          \expandafter\the\expandafter\toks@\bxjy@line}%
+      \fi}%
+    \closein\@inputcheck
+    \xdef\bxjy@g@tmpa{\the\toks@}%
+  \endgroup
+  \let\bxjy@org@ifcsname^^\ifcsname \mathchardef^^\ifcsname=2000
+  \let\bxjy@org@bgroup\bgroup \mathchardef\bgroup=2001
+  \expandafter\bxjy@load@cpsc\bxjy@g@tmpa\bxjy@end
+  \let^^\ifcsname\bxjy@org@ifcsname \let\bxjy@org@ifcsname\@undefined
+  \let\bgroup\bxjy@org@bgroup \let\bxjy@org@bgroup\@undefined
+  \let\bxjy@tmpa\ProvidesPackage
+  \let\bxjy@tmpb\endlinechar \let\endlinechar\@tempcnta
+  \let\bxjy@tmpc\endinput \let\endinput\@empty
+  \def\ProvidesPackage##1[##2]{%
+    \expandafter\let\csname opt@##1.sty\endcsname\@empty
+    \expandafter\let\csname ver@##1.sty\endcsname\filedate
+    \@ifl@t@r\filedate{#2}{\bxjy@load@CJKpunct@a}{}}%
+  \def\filedate{#2}\the\toks@ \let\ProvidesPackage\bxjy@tmpa
+  \let\endlinechar\bxjy@tmpb \let\endinput\bxjy@tmpc}
+\@onlypreamble\bxjy@load@CJKpunct@a
+\long\def\bxjy@load@CJKpunct@a#1\endlinechar{\@tempcnta}
+\@onlypreamble\bxjy@load@cpsc \def\bxjy@load@cpsc{%
+  \toks@{}\futurelet\bxjy@tok\bxjy@load@cpsc@a}
+\@onlypreamble\bxjy@load@cpsc@a \def\bxjy@load@cpsc@a{%
+  \let\bxjy@tmpa\bxjy@load@cpsc@b
+  \ifx\bxjy@tok\bxjy@org@bgroup \let\bxjy@tmpa\bxjy@load@cpsc@e
+  \else\ifx\bxjy@tok\@sptoken \let\bxjy@tmpa\bxjy@load@cpsc@c
+  \else\ifx\bxjy@tok^^\ifcsname \let\bxjy@tmpa\bxjy@load@cpsc@d
+  \else\ifx\bxjy@tok\bxjy@end \let\bxjy@tmpa\@gobble
+  \fi\fi\fi\fi \bxjy@tmpa}
+\@onlypreamble\bxjy@load@cpsc@b \long\def\bxjy@load@cpsc@b#1{%
+  \toks@\expandafter{\the\toks@#1}%
+  \futurelet\bxjy@tok\bxjy@load@cpsc@a}
+\expandafter\def\expandafter\bxjy@load@cpsc@c\space{%
+  \bxjy@load@cpsc@b{ }}
+\@onlypreamble\bxjy@load@cpsc@d \def\bxjy@load@cpsc@d#1#2\endcsname{%
+  \bxjy@load@cpsc@b{^^\if\bxjy@ifcsdef{#2}}}
+\@onlypreamble\bxjy@load@cpsc@e \def\bxjy@load@cpsc@e#1{%
+  \begingroup
+    \bxjy@load@cpsc#1\bxjy@end \xdef\bxjy@g@tmpa{{\the\toks@}}%
+  \endgroup
+  \expandafter\bxjy@load@cpsc@b\expandafter{\bxjy@g@tmpa}}
+\def\bxjy@ifcsdef#1{%
+  \expandafter\ifx\csname#1\endcsname\relax F\else T\fi T}
+\catcode`\^^\=\bxjy@tmpb
+%--------------------------------------- option handling
+
+%% using keyval
+\RequirePackage{keyval}
+
+%% Declares options
+\let\bxjy@driver=n % NO EFFECT
+\let\bxjy@none=n
+\let\bxjy@pdftex=p
+\let\bxjy@dvipdfmx=d
+\DeclareOption{none}{}
+\DeclareOption{dvips}{}
+\DeclareOption{pdftex}{}
+\DeclareOption{dvipdfmx}{}
+\let\bxjy@whole=f
+\DeclareOption{whole}{\let\bxjy@whole=t}
+\DeclareOption{wholeCJK*}{\let\bxjy@whole=t}
+\DeclareOption{wholeCJK}{\let\bxjy@whole=p}
+\DeclareOption{nowhole}{\let\bxjy@whole=f}
+\newif\ifbxjy@everypage % NO EFFECT
+\DeclareOption{everypage}{}
+\DeclareOption{noeverypage}{}
+\newif\ifbxjy@ipaex \bxjy@ipaextrue % MUST be true
+\newif\ifbxjy@defaultmin % MUST be false
+\let\bxjy@oneweight=f % MUST be t
+\DeclareOption{ipaex-type1}{}
+\DeclareOption{defaultmingoth}{\bxjy@l@BO{defaultmingoth}}
+\DeclareOption{oneweight}{}
+\DeclareOption{nooneweight}{\bxjy@l@BO{nooneweight}}
+\newif\ifbxjy@autotilde
+\DeclareOption{autotilde}{\bxjy@autotildetrue}
+\DeclareOption{noautotilde}{\bxjy@autotildefalse}
+\newif\ifbxjy@CJKpunct \bxjy@CJKpuncttrue
+\DeclareOption{CJKpunct}{\bxjy@CJKpuncttrue}
+\DeclareOption{noCJKpunct}{\bxjy@CJKpunctfalse}
+\newif\ifbxjy@CJKspace \bxjy@CJKspacetrue
+\DeclareOption{CJKspace}{\bxjy@CJKspacetrue}
+\DeclareOption{noCJKspace}{\bxjy@CJKspacefalse}
+\newif\ifbxjy@boldbyembolden % NO EFFECT
+\DeclareOption{boldbyembolden}{}
+\DeclareOption{noboldbyembolden}{}
+\newif\ifbxjy@substmin % MUST be false
+\DeclareOption{substmingoth}{\bxjy@l@BO{substmingoth}}
+\DeclareOption{nosubstmingoth}{}
+\newif\ifbxjy@tildespace
+\DeclareOption{CJKtildeasspace}{\bxjy@tildespacetrue}
+\DeclareOption{noCJKtildeasspace}{\bxjy@tildespacefalse}
+% preset spec options : MUST not use
+% NB. All of the (non-obsolete) options of pxchfon are also
+% listed here, but some of them are useless in this package.
+\def\bxjy@all@main@preset{%
+  %(uniweight)
+  ms,ipa,ipaex,%
+  %(multiweight)
+  ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-maruberi,%
+  kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
+  hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx}
+\let\bxjy@main@preset\relax
+\def\bxjy@do#1{\DeclareOption{#1}{\bxjy@l@err@badopt{preset options}}}
+\@for\bxjy@x:=\bxjy@all@main@preset\do{%
+  \expandafter\bxjy@do\expandafter{\bxjy@x}}
+% keyval-type
+\DeclareOption*{%
+  \expandafter\bxjy@setkey@a\expandafter{\CurrentOption}}
+\def\bxjy@setkey@a{\setkeys{bxjy}}
+% 'scale=<real>'
+\let\bxjy@scale\relax
+\define@key{bxjy}{scale}{%
+  \def\bxjy@scale{#1}}
+% 'ttfname=<val>' : NO EFFECT
+\let\bxjy@ttfname\@empty
+\define@key{bxjy}{ttfname}{}
+% 'vertical' (removed)
+\define@key{bxjy}{vertical}[true]{%
+  \PackageError\bxjy@pkgname
+   {Option 'vertical' is abolished}%
+   {\@ehc}}
+% 'lite-warn'
+\define@key{bxjy}{lite-warn}[true]{%
+  \@nameuse{bxjy@ok#1}%
+  \edef\bxjy@tmpb{%
+    \let\noexpand\bxjy@l@warn=\ifbxjy@ok t\else f\fi
+  }\bxjy@tmpb}
+%% Dispatch options
+\ProcessOptions*
+
+%--------------------------------------- configuration check
+
+%% default scale value
+\ifx\bxjy@scale\relax
+  \ifx\Cjascale\@undefined
+    \ifx\jsScale\@undefined
+      \def\bxjy@scale{1}
+    \else \let\bxjy@scale\jsScale
+    \fi
+  \else \let\bxjy@scale\Cjascale
+  \fi
+\fi
+
+%--------------------------------------- preparations
+
+%% Load CJK package and friends
+\RequirePackage{CJK}
+\@namedef{opt@CJK.sty}{encapsulated}
+\let\CJK@global\relax
+\let\CJK@active\relax
+\let\CJK@local\relax
+\RequirePackage{CJKutf8}
+\ifbxjy@CJKspace
+\RequirePackage{CJKspace}
+\fi
+\ifbxjy@CJKpunct
+\bxjy@load@CJKpunct{CJKpunct.sty}{2020/01/01}
+\fi
+
+%%<+> \FirstCJKUse
+%%<+> \EveryCJKUse
+\providecommand*\CJKhook{}
+\g@addto@macro\CJKhook{%
+  \bxjy@first@cjk@use@hook
+  \bxjy@every@cjk@use@hook}
+\def\bxjy@first@cjk@use@hook{%
+  \global\let\bxjy@first@cjk@use@hook\relax}
+\let\bxjy@every@cjk@use@hook\@empty
+\newcommand*\FirstCJKUse{%
+  \g@addto@macro\bxjy@first@cjk@use@hook}
+\newcommand*\EveryCJKUse{%
+  \g@addto@macro\bxjy@every@cjk@use@hook}
+
+%--------------------------------------- user interface
+
+%%%%<*> \setminchofont/\setgothicfont/etc.
+\newcommand*\setminchofont{\bxjy@setfont{mnl,mnr,mnb}}
+\newcommand*\setgothicfont{\bxjy@setfont{gtr,gtb,gtx,gtu}}
+\newcommand*\setlightminchofont{\bxjy@setfont{mnl}}
+\newcommand*\setmediumminchofont{\bxjy@setfont{mnr}}
+\newcommand*\setboldminchofont{\bxjy@setfont{mnb}}
+\newcommand*\setmediumgothicfont{\bxjy@setfont{gtr}}
+\newcommand*\setboldgothicfont{\bxjy@setfont{gtb}}
+\newcommand*\setxboldgothicfont{\bxjy@setfont{gtx}}
+\newcommand*\setoneweightgothicfont{\bxjy@setfont{gtu}}
+\newcommand*\setmarugothicfont{\bxjy@setfont{mgr}}
+\def\bxjy@setfont#1{\@ifnextchar[%]
+  {\bxjy@setfont@a{#1}}{\bxjy@setfont@a{#1}[]}}
+\def\bxjy@setfont@a#1[#2]#3{}
+
+%%<*> \begin{uCJK}
+\@ifdefinable{\uCJK}{%
+  \def\uCJK{%
+    \bxjy@set@genfam
+    \CJK{UTF8}{\bxjy@genfam}}
+  \let\enduCJK\endCJK
+}
+%%<*> \begin{uCJK*}
+\@ifdefinable{\uCJK*}{%
+  \@namedef{uCJK*}{%
+    \bxjy@set@genfam
+    \CJK{UTF8}{\bxjy@genfam}}
+  \bxjy@l@cslet{enduCJK*}\endCJK
+}
+
+%%<*> \setCJKfamilydefault{<fam>}
+\DeclareRobustCommand*\setCJKfamilydefault[1]{%
+  \bxjy@default@settrue
+  \CJKencfamily{UTF8}{#1}}
+\AtEndOfPackage{%
+  \bxjy@default@setfalse}
+
+%% \bxjy@set@genfam
+\def\bxjy@set@genfam{%
+  \bxjy@okfalse
+  \edef\bxjy@tmpa{\f@family}%
+  \edef\bxjy@tmpb{\sfdefault}%
+  \ifx\bxjy@tmpa\bxjy@tmpb \bxjy@oktrue \fi
+  \edef\bxjy@tmpb{\ttdefault}%
+  \ifx\bxjy@tmpa\bxjy@tmpb \bxjy@oktrue \fi
+  \edef\bxjy@genfam{\ifbxjy@ok \gtdefault \else \mcdefault \fi}}
+
+%% autotilde
+\EveryCJKUse{%
+  \ifbxjy@autotilde \CJKtilde \fi}
+
+%%<*> \CJKecglue
+\ifx\CJKecglue\@undefined
+  \def\CJKtilde{%
+    \CJK@global\def~{\CJKecglue\ignorespaces}}
+  \def\CJKecglue{\hspace{0.25em plus 0.125em minus 0.08em}}
+\fi
+
+%%<*> \>
+\bxjy@okfalse
+\def\bxjy@tmpa{\mskip\medmuskip}
+\ifx\>\bxjy@tmpa \bxjy@oktrue
+\else\ifx\>\medspace
+  \long\def\bxjy@tmpa{\tmspace+\medmuskip{.2222em}}
+  \begingroup\expandafter\endgroup\expandafter
+      \ifx\csname : \endcsname\bxjy@tmpa \bxjy@oktrue \fi
+\fi\fi
+\ifbxjy@ok
+  \def\>{\ifmmode\mskip\medmuskip\else \CJKecglue\ignorespaces \fi}
+\fi
+
+%--------------------------------------- something Unicode
+
+%%<*> \UTF{<hex-number>}
+\newcommand*\UTF[1]{%
+  \edef\bxjy@tmpa{#1}%
+  \expandafter\bxjy@utf@a\bxjy@tmpa\bxjy@mark000000\bxjy@end}
+\def\bxjy@utf@a#1#2#3#4#5#6#7#8\bxjy@end{%
+  \bxjy@utf@b#1#2#3#4#5#6#7\bxjy@end}
+\def\bxjy@utf@b#1\bxjy@mark#2\bxjy@end{%
+  \uppercase{\bxjy@utf@c#2#1}\bxjy@end}
+\def\bxjy@utf@c#1#2#3#4#5#6\bxjy@end{%
+  \Unicode{"#1#2#3#4}{"#5#6}}
+
+%%<*> \CJKforce{<kanji>...}
+\newcommand*\CJKforce[1]{%
+  \bxjy@l@warn@na\CJKforce
+}
+%%<*> \CJKunforce{<kanji>...}
+\newcommand*\CJKunforce[1]{%
+  \bxjy@l@warn@na\CJKunforce
+}
+
+%%<*> \CJKforced{<kanji>}
+\@ifdefinable{\CJKforced}{%
+  \def\CJKforced{%
+    \ifx\protect\@typeset@protect \bxjy@l@warn@na\CJKforced \fi
+  }
+}
+
+%%<*> \@
+\def\bxjy@at@a{%
+  \futurelet\bxjy@tok\bxjy@at@b
+}
+\def\bxjy@at@b{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok.\fi{\bxjy@org@at}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\@sptoken\fi{\bxjy@org@at}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\bgroup\fi{\CJKforced}{%
+  \bxjy@cond\ifcat\noexpand\bxjy@tok\relax\fi{\bxjy@at@c}{%
+    \bxjy@org@at
+  }}}}%
+}
+\def\bxjy@at@c#1{%
+  \bxjy@cond\ifcat\noexpand#1\noexpand~\fi{\CJKforced}{%
+    \bxjy@org@at
+  }#1%
+}
+
+%--------------------------------------- NFSS declarations
+
+%%<*> \mcdefault/\gtdefault/\mgdefault
+\providecommand{\mcdefault}{mc}
+\providecommand{\gtdefault}{gt}
+\providecommand{\mgdefault}{mg}
+
+%%<*> \mcfamily/\gtfamily/\mgfamily
+\DeclareRobustCommand*{\mcfamily}{%
+  \not@math@alphabet\mcfamily\relax
+  \CJKfamily{\mcdefault}}
+\DeclareRobustCommand*{\gtfamily}{%
+  \not@math@alphabet\mcfamily\relax
+  \CJKfamily{\gtdefault}}
+\DeclareRobustCommand*{\mgfamily}{%
+  \not@math@alphabet\mcfamily\relax
+  \CJKfamily{\mgdefault}}
+
+%% \bxjy@normalafont
+\bxjy@l@letcs\bxjy@normalafont{normalfont }
+
+%% Add patches to \rmfamily, etc.
+\bxjy@l@csappto{rmfamily }{%
+  \CJKfamily{\mcdefault}}
+\bxjy@l@csappto{sffamily }{%
+  \CJKfamily{\gtdefault}}
+\bxjy@l@csappto{ttfamily }{%
+  \CJKfamily{\gtdefault}}
+\bxjy@l@csappto{normalfont }{%
+  \CJKfamily{}}
+
+\def\CJKbold{\CJK@bold@true}
+\def\CJKnormal{\CJK@bold@false}
+
+%% Set default CJK family
+\setCJKfamilydefault{\mcdefault}
+
+%% \bxjy@force@load@font@fam
+\@onlypreamble\bxjy@force@load@font@fam
+\def\bxjy@force@load@font@fam#1{%
+  \begingroup
+    \def\f@encoding{C70}\let\CJK@enc\f@encoding
+    \edef\f@family{#1}\let\CJK@family\f@family
+    \def\f@series{m}\def\f@shape{n}%
+    \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
+    \let\extract@font\relax \pickup@font
+  \endgroup}
+
+%--------------------------------------- ipaex-type1
+\ifbxjy@ipaex
+
+%% default changed
+\renewcommand{\mcdefault}{ipxm}
+\renewcommand{\gtdefault}{ipxg}
+\renewcommand{\mgdefault}{ipxg}
+
+%% scale applied
+\ifdim\bxjy@scale\p@=\p@\else
+  \def\bxjy@tmpa#1#2#3{%
+    \bxjy@force@load@font@fam{#1}%
+    \expandafter\ifx\csname C70+#1\endcsname\@empty\else
+      \def\bxjy@tmpb{\DeclareFontShape{C70}{#1}}%
+      \bxjy@tmpb{m}{n}{<->sCJK*[\bxjy@scale]#3-r-u}{}%
+      \ifx t#2%
+        \bxjy@tmpb{m}{sl}{<->sCJK*[\bxjy@scale]#3-ro-u}{}%
+        \bxjy@tmpb{bx}{n}{<->sCJKb*[\bxjy@scale]#3-r-u}{\CJKbold}%
+        \bxjy@tmpb{bx}{sl}{<->sCJKb*[\bxjy@scale]#3-ro-u}{\CJKbold}%
+      \fi
+    \fi}
+  \bxjy@tmpa{ipxm}f{ipxm}%
+  \bxjy@tmpa{ipxg}f{ipxg}%
+  \bxjy@tmpa{ipxma}t{ipxm}%
+  \bxjy@tmpa{ipxga}t{ipxg}%
+\fi
+
+\fi
+%--------------------------------------- bold-by-embolden
+% makes \CJK[no]boldbyembolden no-op
+\newcommand*{\CJKboldbyembolden}{}
+\newcommand*{\CJKnoboldbyembolden}{}
+%--------------------------------------- begin-document hook
+
+%% The document hooks for 'whole' option
+\AtBeginDocument{%
+  \ifbxjy@default@set\else
+    \bxjy@set@genfam
+    \setCJKfamilydefault{\bxjy@genfam}%
+  \fi}
+\ifx t\bxjy@whole
+  \AtBeginDocument{\@nameuse{CJK*}{UTF8}{}}
+  \AtEndDocument{\clearpage\@nameuse{endCJK*}}
+\else\ifx p\bxjy@whole
+  \AtBeginDocument{\CJK{UTF8}{}}
+  \AtEndDocument{\clearpage\CJK}
+\fi\fi
+
+%% Invokes first-CJK hook at begin-document
+\AtBeginDocument{\bxjy@first@cjk@use@hook}
+
+%--------------------------------------- PDF-string hack
+
+%%<+> \bxcjkjatypeHyperrefPatchDone
+%% Informs that the patch is applied.
+\ifbxjy@tildespace
+\let\bxcjkjatypeHyperrefPatchDone=f
+\else
+\let\bxcjkjatypeHyperrefPatchDone=t
+\fi
+
+\ifbxjy@tildespace\else     %----<*!CJKtildeasspace>
+%% prepare
+\begingroup
+  \CJK@input{UTF8.bdg}% emerge CJK@UTF8Binding
+\endgroup
+%% register to \pdfstringdefPreHook
+\g@addto@macro\pdfstringdefPreHook{%
+  \@nameuse{CJK@UTF8Binding}% enable UTF8 decoder
+  \ifx~\bxjy@@CJKtilde % \CJKtilde is effective
+    \let\bxjy@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
+    \let\HyPsd@LetUnexpandableSpace\bxjy@LetUnexpandableSpace
+    \let~\@empty
+  \fi
+}
+\def\bxjy@@CJKtilde{\CJKecglue\ignorespaces}
+%% patch to \HyPsd@LetUnexpandableSpace
+\def\bxjy@@tildecmd{~}
+\def\bxjy@LetUnexpandableSpace#1{%
+  \def\bxjy@tmpa{#1}\ifx\bxjy@tmpa\bxjy@@tildecmd\else
+    \bxjy@org@LetUnexpandableSpace#1%
+  \fi
+}
+\fi                         %----</!CJKtildeasspace>
+
+%--------------------------------------- all done
+\endinput
+%% EOF
