@@ -11,8 +11,29 @@
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxcjkjatype-lite}[2023/07/31 v0.5-pre]
-\def\bxjy@pkgname{bxcjkjatype-lite}
+\def\bxjy@l@pkgname{bxcjkjatype-lite}
+\def\bxjy@pkgname{bxcjkjatype}
 \def\bxjy@error{\PackageError\bxjy@pkgname}
+
+%--------------------------------------- adjustment for full version
+
+%% check if full version is loaded
+\@ifundefined{ver@\bxjy@pkgname.sty}{% not yet loaded
+  \expandafter\let\csname ver@\bxjy@pkgname.sty\expandafter\endcsname
+     \csname ver@\bxjy@l@pkgname.sty\endcsname
+  \expandafter\let\csname opt@\bxjy@pkgname.sty\expandafter\endcsname
+     \csname opt@\bxjy@l@pkgname.sty\endcsname
+}{\@ifundefined{\bxjy@pkgname.sty-h@@k}{% already loaded
+  \PackageWarningNoLine\bxjy@l@pkgname
+   {Package loading is aborted, since\MessageBreak
+    the full version is already loaded}
+  \DeclareOption*{}\ProcessOptions\relax
+  \endinput
+}{% now in loading, no-op
+}}
+
+%% now lite version is effective
+\let\bxjy@pkgname\bxjy@l@pkgname
 
 %--------------------------------------- environment check
 

@@ -26,7 +26,15 @@
 
 %% engine check
 \@tempswatrue
-\bxjy@ifprimitive\eTeXversion{}{\@tempswafalse}
+\bxjy@ifprimitive\eTeXversion{}{%else
+  \IfFileExists{bxcjkjatype-lite.sty}{%
+    \PackageWarningNoLine\bxjy@pkgname
+     {The e-TeX extension is missing,\MessageBreak
+      so Lite version is used instead}%
+    \RequirePackageWithOptions{bxcjkjatype-lite}\relax
+    \endinput\relax
+  }{\@tempswafalse}%
+}
 \bxjy@ifprimitive\kanjiskip{\@tempswafalse}{}
 \bxjy@ifprimitive\luatexversion{\@tempswafalse}{}
 \bxjy@ifprimitive\XeTeXversion{\@tempswafalse}{}
