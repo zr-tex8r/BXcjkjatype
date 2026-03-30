@@ -72,9 +72,11 @@
 \let\bxjy@pdftex=p
 \let\bxjy@dvipdfmx=d
 \DeclareOption{none}{\let\bxjy@driver\bxjy@none}
+\DeclareOption{nodvidriver}{\let\bxjy@driver\bxjy@none}
 \DeclareOption{dvips}{\let\bxjy@driver\bxjy@none}
 \DeclareOption{pdftex}{\let\bxjy@driver\bxjy@pdftex}
 \DeclareOption{dvipdfmx}{\let\bxjy@driver\bxjy@dvipdfmx}
+\DeclareOption{resetdvidriver}{\let\bxjy@driver\@undefined}
 \let\bxjy@whole=f
 \DeclareOption{whole}{\let\bxjy@whole=t}
 \DeclareOption{wholeCJK*}{\let\bxjy@whole=t}
@@ -304,7 +306,7 @@
 \def\bxjy@tmpa{\mskip\medmuskip}
 \ifx\>\bxjy@tmpa \bxjy@oktrue
 \else\ifx\>\medspace
-  \long\def\bxjy@tmpa{\tmspace+\medmuskip{.2222em}}
+  \renewcommand\bxjy@tmpa{\tmspace+\medmuskip{.2222em}}
   \begingroup\expandafter\endgroup\expandafter
       \ifx\csname : \endcsname\bxjy@tmpa \bxjy@oktrue \fi
 \fi\fi

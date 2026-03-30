@@ -355,7 +355,7 @@
 \def\bxjy@tmpa{\mskip\medmuskip}
 \ifx\>\bxjy@tmpa \bxjy@oktrue
 \else\ifx\>\medspace
-  \long\def\bxjy@tmpa{\tmspace+\medmuskip{.2222em}}
+  \renewcommand\bxjy@tmpa{\tmspace+\medmuskip{.2222em}}
   \begingroup\expandafter\endgroup\expandafter
       \ifx\csname : \endcsname\bxjy@tmpa \bxjy@oktrue \fi
 \fi\fi
