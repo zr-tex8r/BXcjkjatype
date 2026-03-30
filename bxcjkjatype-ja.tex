@@ -11,8 +11,8 @@
 \newenvironment{myverbatim}
   {\begin{quote}\small\verbatim}
   {\endverbatim\end{quote}}
-\newcommand{\PkgVersion}{0.5}
-\newcommand{\PkgDate}{2023/07/23}
+\newcommand{\PkgVersion}{0.5a}
+\newcommand{\PkgDate}{2026/03/31}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -165,13 +165,16 @@
 \item |noeverypage|（既定）\Means
   |everypage| の否定。
 \item ドライバオプション\Means
-  |pdftex|、|dvipdfmx|、|dvips|、|none| が指定できる。
+  |pdftex|、|dvipdfmx|、|dvips|、|none|（＝|nodvidriver|）
+  が指定できる。
   ドライバ設定は既定（ipaex-type1）以外のフォントマップの使用時に
   のみ意味をもつ。
   さらに、フォントマップ変更は |pdftex| と |dvipdfmx| でのみ
   サポートされ、またこの2つの値は常に自動判定可能
   （PDFモードでは |pdftex|、DVIモードでは |dvipdfmx| が既定）
   なので、実際にはドライバを指定する必要はない。
+\item |resetdvidriver|\Means
+  ドライバ指定をリセットする。
 \item |substmingoth|\Means
   CJKパッケージの日本語用総称ファミリとして慣習的に使われている
   ファミリの |min|／|goth|／|maru| について、{\LaTeX} レベルで、

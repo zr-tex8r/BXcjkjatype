@@ -56,6 +56,9 @@ Please refer to the user manual for detail.
 Revision History
 ----------------
 
+  * Version 0.5a ‹2026/03/31›
+      - Adjustment for LaTeX kernel 2025/11/01.
+
   * Version 0.5  ‹2023/07/23›
       - Adjustment for the recent LaTeX kernel.
 

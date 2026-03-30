@@ -14,8 +14,8 @@
   {\begin{quote}\small\verbatim}
   {\endverbatim\end{quote}}
 \newcommand*{\Cs}[1]{\texttt{\textbackslash #1}}
-\newcommand{\PkgVersion}{0.5}
-\newcommand{\PkgDate}{2023/07/23}
+\newcommand{\PkgVersion}{0.5a}
+\newcommand{\PkgDate}{2026/03/31}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\textit{#1}$\rangle$}
 \newcommand{\Note}{\par\noindent \emph{Note:}\quad}
@@ -178,7 +178,8 @@ one can employ the scaling even with the
 \item |noeverypage| (default)\Means
   Negation of |everypage|.
 \item Driver options\Means
-  |pdftex|, |dvipdfmx|, |dvips| and |none| are available.
+  |pdftex|, |dvipdfmx|, |dvips| and |none| (= |nodvidriver|)
+  are available.
   The driver setting is relevant only when using font mappings other
   than the default one (ipaex-type1 fonts), so you need not care of
   drivers in using default fonts.
@@ -186,6 +187,8 @@ one can employ the scaling even with the
   and |dvipdfmx|, and these two values are auto-detected
   (|pdftex| is default in PDF mode and |dvipdfmx| in DVI mode).
   Thus you will never need to specify the driver.
+\item |resetdvidriver|\Means
+  Reset the driver setting.
 \item |substmingoth|\Means
   Applies the substituion of families |min|, |goth| and |maru|
   (used conventionally for Japanese) with families |mc|, |gt| and |mg|
